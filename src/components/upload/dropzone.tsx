@@ -298,7 +298,7 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
                             <h4 className="text-sm font-bold text-white mb-2">Aucun rapport trouvé ?</h4>
                             <p className="text-xs text-gray-500 leading-relaxed mb-4">
                                 Vérifiez que vos logs sont bien en mode **Public** sur Warcraft Logs.
-                                Si le problème persiste, utilisez l'onglet **Analyse Directe** en haut pour copier-coller vos textes.
+                                Si le problème persiste, utilisez l&apos;onglet **Analyse Directe** en haut pour copier-coller vos textes.
                             </p>
                         </motion.div>
                     )}
