@@ -100,7 +100,7 @@ export function RawLogTextArea({ onAnalyze, isProcessing }: RawLogTextAreaProps)
             >
                 <span className="relative z-10 flex items-center gap-2">
                     <Zap className="h-5 w-5 fill-current" />
-                    Lancer l'Analyse Directe
+                    Lancer l&apos;Analyse Directe
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-epic-600 to-mana-600 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
