@@ -21,26 +21,15 @@ export async function fetchWCLRankings(
     serverSlug: string,
     region: string
 ): Promise<WCLRankingData[] | null> {
-    const clientId = process.env.WCL_CLIENT_ID;
-    const clientSecret = process.env.WCL_CLIENT_SECRET;
+    const access_token = await getWCLAccessToken();
 
-    if (!clientId || !clientSecret) {
-        console.warn("[WCL] Missing API credentials. Skipping WCL data fetch.");
+    if (!access_token) {
+        // Fallback or warning
         return null;
     }
 
     try {
-        // 1. Get Access Token
-        const tokenRes = await fetch("https://www.warcraftlogs.com/oauth/token", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`,
-        });
-
-        if (!tokenRes.ok) throw new Error("Failed to get WCL token");
-        const { access_token } = await tokenRes.json();
-
-        // 2. Query Rankings via GraphQL (v2 API)
+        // Query Rankings via GraphQL (v2 API)
         const query = `
             query {
                 characterData {
@@ -88,16 +77,13 @@ export async function fetchWCLRankings(
 }
 
 /**
- * Gets an OAuth2 access token from Warcraft Logs
+ * Gets an OAuth2 access token from Warcraft Logs (API v2)
  */
 async function getWCLAccessToken(): Promise<string | null> {
     const clientId = process.env.WCL_CLIENT_ID;
     const clientSecret = process.env.WCL_CLIENT_SECRET || process.env.KEY_WACRAFTLOGS;
 
-    if (!clientId || !clientSecret) {
-        console.warn("[WCL] Missing Client ID or Secret/Key. Check WCL_CLIENT_ID and WCL_CLIENT_SECRET (or KEY_WACRAFTLOGS).");
-        return null;
-    }
+    if (!clientId || !clientSecret) return null;
 
     try {
         const res = await fetch("https://www.warcraftlogs.com/oauth/token", {
@@ -105,20 +91,16 @@ async function getWCLAccessToken(): Promise<string | null> {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`,
         });
-        if (!res.ok) {
-            console.error("[WCL] Auth Failed:", await res.text());
-            return null;
-        }
+        if (!res.ok) return null;
         const { access_token } = await res.json();
         return access_token;
-    } catch (error) {
-        console.error("[WCL] Token Error:", error);
+    } catch {
         return null;
     }
 }
 
 /**
- * Fetches recent reports for a character
+ * Fetches recent reports for a character (Try v2 then v1 fallback)
  */
 export async function fetchCharacterReports(
     name: string,
@@ -126,41 +108,64 @@ export async function fetchCharacterReports(
     region: string
 ): Promise<any[]> {
     const token = await getWCLAccessToken();
-    if (!token) return [];
 
-    const query = `
-        query {
-            characterData {
-                character(name: "${name}", serverSlug: "${serverSlug}", serverRegion: "${region}") {
-                    id
-                    recentReports(limit: 10) {
-                        data {
-                            code
-                            startTime
-                            title
-                            zone { name }
+    // --- Method 1: API v2 (GraphQL) ---
+    if (token) {
+        const query = `
+            query {
+                characterData {
+                    character(name: "${name}", serverSlug: "${serverSlug}", serverRegion: "${region}") {
+                        recentReports(limit: 10) {
+                            data {
+                                code
+                                startTime
+                                title
+                                zone { name }
+                            }
                         }
                     }
                 }
             }
-        }
-    `;
+        `;
 
-    try {
-        const res = await fetch("https://www.warcraftlogs.com/api/v2/client", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-            },
-            body: JSON.stringify({ query }),
-        });
-        const data = await res.json();
-        return data.data?.characterData?.character?.recentReports?.data || [];
-    } catch (e) {
-        console.error("[WCL] Error fetching reports:", e);
-        return [];
+        try {
+            const res = await fetch("https://www.warcraftlogs.com/api/v2/client", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({ query }),
+            });
+            const data = await res.json();
+            const reports = data.data?.characterData?.character?.recentReports?.data;
+            if (reports) return reports;
+        } catch (e) {
+            console.error("[WCL] v2 Error:", e);
+        }
     }
+
+    // --- Method 2: API v1 Fallback (For single API Key users) ---
+    const apiKey = process.env.KEY_WACRAFTLOGS || process.env.WCL_CLIENT_SECRET;
+    if (apiKey) {
+        try {
+            const url = `https://www.warcraftlogs.com:443/v1/reports/character/${encodeURIComponent(name)}/${encodeURIComponent(serverSlug)}/${encodeURIComponent(region)}?api_key=${apiKey}`;
+            const res = await fetch(url);
+            if (res.ok) {
+                const data = await res.json();
+                return data.map((r: any) => ({
+                    code: r.id,
+                    startTime: r.start,
+                    title: r.title,
+                    zone: { name: r.zoneName || "Inconnu" }
+                })).slice(0, 10);
+            }
+        } catch (e) {
+            console.error("[WCL] v1 Fallback Error:", e);
+        }
+    }
+
+    return [];
 }
 
 /**
@@ -168,6 +173,7 @@ export async function fetchCharacterReports(
  */
 export function slugifyServer(server: string): string {
     return server
+        .trim()
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "") // Remove accents

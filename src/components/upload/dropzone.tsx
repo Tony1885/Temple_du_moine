@@ -287,7 +287,7 @@ export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
 
                     {/* Search Results */}
                     <AnimatePresence>
-                        {searchResults && searchResults.length > 0 && (
+                        {searchResults.length > 0 && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
