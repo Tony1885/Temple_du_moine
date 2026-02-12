@@ -304,7 +304,7 @@ export function cleanRawLogs(input: string): {
         if (isRelevant) {
             const parts = line.split(",");
             const sourceName = parts[2]?.replace(/"/g, "");
-            if (sourceName && sourceName !== "nil" && !sourceName.includes("-")) { // Avoid NPC IDs
+            if (sourceName && sourceName !== "nil") {
                 counts[sourceName] = (counts[sourceName] || 0) + 1;
             }
             if (line.includes("SPELL_CAST_SUCCESS")) casts++;

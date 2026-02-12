@@ -196,8 +196,11 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
 
                     <button
                         onClick={handleSearch}
-                        disabled={(!charName || (!server && charName.toUpperCase() !== "TEST_M+")) || isSearching}
-                        className="btn-legendary flex items-center justify-center gap-2 py-4 text-base font-bold transition-all disabled:pointer-events-none disabled:opacity-40"
+                        disabled={(!charName || (!server && charName.toUpperCase() !== "TEST_M+" && !charName.includes("warcraftlogs.com/reports/"))) || isSearching}
+                        className={cn(
+                            "btn-legendary flex items-center justify-center gap-2 py-4 text-base font-bold transition-all disabled:pointer-events-none disabled:opacity-40",
+                            (!charName || (!server && charName.toUpperCase() !== "TEST_M+" && !charName.includes("warcraftlogs.com/reports/"))) && "grayscale opacity-50"
+                        )}
                     >
                         {isSearching ? (
                             <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -207,7 +210,10 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
                         ) : (
                             <Search className="h-5 w-5" />
                         )}
-                        Rechercher Rapport
+                        {(!charName || (!server && charName.toUpperCase() !== "TEST_M+" && !charName.includes("warcraftlogs.com/reports/")))
+                            ? "Remplis ton nom et serveur"
+                            : "Rechercher mes rapports"
+                        }
                     </button>
 
                     <div className="flex items-center gap-3 px-1 my-2">
