@@ -179,6 +179,50 @@ export async function fetchCharacterReports(
 }
 
 /**
+ * Fetches details about a specific report (title, zone, fights)
+ */
+export async function fetchWCLReportDetails(reportCode: string): Promise<any | null> {
+    const token = await getWCLAccessToken();
+    if (!token) return null;
+
+    const query = `
+        query {
+            reportData {
+                report(code: "${reportCode}") {
+                    title
+                    zone { name }
+                    fights(killType: All) {
+                        id
+                        name
+                        difficulty
+                        keystoneLevel
+                        kill
+                        startTime
+                        endTime
+                    }
+                }
+            }
+        }
+    `;
+
+    try {
+        const res = await fetch("https://www.warcraftlogs.com/api/v2/client", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ query }),
+        });
+        const data = await res.json();
+        return data.data?.reportData?.report;
+    } catch (e) {
+        console.error("[WCL] Error fetching report details:", e);
+        return null;
+    }
+}
+
+/**
  * Slugifies server names for WCL API (e.g. "Chamber of Aspects" -> "chamber-of-aspects")
  */
 export function slugifyServer(server: string): string {

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { DUMMY_MPLUS_REPORTS } from "@/lib/dummy-mplus";
 
 interface DropzoneProps {
-    onFileAccepted: (file: File, anonymize: boolean, characterInfo: { region: string, server: string, charName?: string, reportCode?: string }) => void;
+    onFileAccepted: (file: File | null, anonymize: boolean, characterInfo: { region: string, server: string, charName?: string, reportCode?: string }) => void;
     onTestMPlus?: (data: any) => void;
     isProcessing: boolean;
 }
@@ -40,8 +40,10 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
     }, []);
 
     const handleSearch = async () => {
+        const normalizedCharName = charName.trim().toUpperCase().replace(/[-\s]/g, "_");
+
         // --- TEST MODE ---
-        if (charName.toUpperCase() === "TEST_M+") {
+        if (normalizedCharName === "TEST_MPLUS" || normalizedCharName === "TEST_M+") {
             setSearchResults(DUMMY_MPLUS_REPORTS);
             setError(null);
             return;
@@ -78,7 +80,14 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
             }
             return;
         }
-        window.open(`https://www.warcraftlogs.com/reports/${report.code}`, '_blank');
+
+        // --- Real Report Analysis ---
+        onFileAccepted(null, anonymize, {
+            region,
+            server,
+            charName,
+            reportCode: report.code
+        });
     };
 
     const handleDrop = useCallback(
@@ -105,7 +114,7 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
     );
 
     const handleSubmit = useCallback(() => {
-        if (selectedFile) {
+        if (selectedFile || reportCode) {
             onFileAccepted(selectedFile, anonymize, { region, server, charName, reportCode });
         }
     }, [selectedFile, anonymize, region, server, charName, reportCode, onFileAccepted]);
@@ -305,7 +314,7 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
 
                     <button
                         onClick={handleSearch}
-                        disabled={!charName || !server || isSearching}
+                        disabled={(!charName || (!server && charName.toUpperCase() !== "TEST_M+")) || isSearching}
                         className="flex items-center justify-center gap-2 rounded-xl bg-epic-500/10 py-3 text-sm font-bold text-epic-400 ring-1 ring-epic-500/20 transition-all hover:bg-epic-500/20 disabled:pointer-events-none disabled:opacity-40"
                     >
                         {isSearching ? (
@@ -359,28 +368,30 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
 
             {/* Options & Submit */}
             <AnimatePresence>
-                {selectedFile && (
+                {(selectedFile || reportCode) && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         className="mt-6 space-y-4"
                     >
-                        {/* Anonymize toggle */}
-                        <button
-                            onClick={() => setAnonymize(!anonymize)}
-                            className="flex w-full items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3 ring-1 ring-white/5 transition-all hover:bg-white/[0.05] hover:ring-white/10"
-                        >
-                            <Shield className="h-4 w-4 text-mana-400" />
-                            <span className="flex-1 text-left text-sm text-gray-300">
-                                Anonymiser les noms des joueurs
-                            </span>
-                            {anonymize ? (
-                                <EyeOff className="h-4 w-4 text-epic-400" />
-                            ) : (
-                                <Eye className="h-4 w-4 text-gray-600" />
-                            )}
-                        </button>
+                        {/* Anonymize toggle (only for file upload) */}
+                        {selectedFile && (
+                            <button
+                                onClick={() => setAnonymize(!anonymize)}
+                                className="flex w-full items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3 ring-1 ring-white/5 transition-all hover:bg-white/[0.05] hover:ring-white/10"
+                            >
+                                <Shield className="h-4 w-4 text-mana-400" />
+                                <span className="flex-1 text-left text-sm text-gray-300">
+                                    Anonymiser les noms des joueurs
+                                </span>
+                                {anonymize ? (
+                                    <EyeOff className="h-4 w-4 text-epic-400" />
+                                ) : (
+                                    <Eye className="h-4 w-4 text-gray-600" />
+                                )}
+                            </button>
+                        )}
 
                         {/* Submit button */}
                         <button
@@ -412,7 +423,7 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
                                     Analyse en cours...
                                 </span>
                             ) : (
-                                "🚀 Lancer l'analyse IA"
+                                reportCode && !selectedFile ? "🔍 Analyser via WCL" : "🚀 Lancer l'analyse IA"
                             )}
                         </button>
                     </motion.div>

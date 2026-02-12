@@ -16,12 +16,13 @@ export async function POST(request: NextRequest) {
     let encounterStr = "";
     try {
         const formData = await request.formData();
-        const geminiContext = formData.get("geminiContext") as string | null;
+        let geminiContext = formData.get("geminiContext") as string | null;
         performanceStr = formData.get("performance") as string || "";
         encounterStr = formData.get("encounter") as string || "";
         const charInfoStr = formData.get("characterInfo") as string | null;
         const anonymize = formData.get("anonymize") === "true";
         const demoMode = formData.get("demo") === "true";
+        const wclOnly = formData.get("wclOnly") === "true";
 
         // Mode démo - retour immédiat de données simulées
         if (demoMode) {
@@ -32,16 +33,64 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        if (!geminiContext || !performanceStr) {
+        let charInfo = charInfoStr ? JSON.parse(charInfoStr) : null;
+        let reportCode = charInfo?.reportCode;
+
+        // If WCL ONLY and no file
+        if (wclOnly && !geminiContext && reportCode) {
+            const { fetchWCLReportDetails } = require("@/lib/wcl-api");
+            const reportDetails = await fetchWCLReportDetails(reportCode);
+
+            if (!reportDetails) {
+                return NextResponse.json({ success: false, error: "Impossible de récupérer les détails du rapport WCL." }, { status: 404 });
+            }
+
+            // Construct a mini-performance object from WCL metadata for fallback
+            const lastFight = reportDetails.fights?.[reportDetails.fights.length - 1];
+            const realPerformance = {
+                playerName: charInfo?.charName || "Joueur Inconnu",
+                playerClass: "Warrior", // Fallback
+                dps: 0,
+                fightDuration: lastFight ? (lastFight.endTime - lastFight.startTime) / 1000 : 0,
+            };
+            const realEncounter = {
+                bossName: lastFight?.name || reportDetails.title,
+                difficulty: lastFight?.keystoneLevel ? "Mythic+" : (lastFight?.difficulty === 4 ? "Heroic" : "Normal"),
+                keystoneLevel: lastFight?.keystoneLevel,
+                dungeonOrRaid: reportDetails.zone?.name || "Donjon inconnu",
+                duration: realPerformance.fightDuration / 60,
+                wipeOrKill: lastFight?.kill ? "Kill" : "Wipe"
+            };
+
+            // Enhanced Gemini Context for WCL-only
+            const enhancedContext = `
+                RAPPORT WCL DÉTECTÉ : ${reportCode}
+                Titre : ${reportDetails.title}
+                Zone : ${reportDetails.zone?.name}
+                Fights : ${reportDetails.fights?.length} combats trouvés.
+                Dernier combat : ${realEncounter.bossName} (${realEncounter.difficulty}${realEncounter.keystoneLevel ? ' +' + realEncounter.keystoneLevel : ''})
+            `;
+
+            geminiContext = enhancedContext;
+
+            performanceStr = JSON.stringify(realPerformance);
+            encounterStr = JSON.stringify(realEncounter);
+
+            // Override prompt variables for later use
+            // Note: In a real app we would fetch the actual fight JSON tables here.
+            // For now, we tell Gemini we only have metadata.
+        }
+
+        if (!performanceStr && !wclOnly) {
             return NextResponse.json({ success: false, error: "Données d'analyse manquantes." }, { status: 400 });
         }
 
-        const realPerformance = JSON.parse(performanceStr);
+        const realPerformance = JSON.parse(performanceStr || "{}");
         const realEncounter = encounterStr ? JSON.parse(encounterStr) : {
-            bossName: "Plusieurs Boss",
-            difficulty: "Héroïque",
-            dungeonOrRaid: "Analyse en cours",
-            duration: realPerformance.fightDuration,
+            bossName: "Donjon",
+            difficulty: "Mythic+",
+            dungeonOrRaid: "Chargement...",
+            duration: realPerformance.fightDuration || 0,
             wipeOrKill: "Kill"
         };
 

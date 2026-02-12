@@ -96,19 +96,31 @@ function AnalyzeContent() {
     }, []);
 
     const handleFileAccepted = useCallback(
-        async (file: File, anonymize: boolean, characterInfo?: { region: string, server: string, charName?: string }) => {
+        async (file: File | null, anonymize: boolean, characterInfo?: { region: string, server: string, charName?: string, reportCode?: string }) => {
             try {
                 setError(null);
-                console.log("[WoWAnalyzer] Starting analysis for:", file.name, file.size, "bytes");
+                const isWclOnly = !file && !!characterInfo?.reportCode;
 
-                // Stage 1: Upload (0→30%)
-                setAnalysisState("uploading");
-                setProgress({
-                    state: "uploading",
-                    progress: 0,
-                    message: "Upload du log en cours...",
-                    subMessage: `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} Mo)`,
-                });
+                if (file) {
+                    console.log("[WoWAnalyzer] Starting file analysis for:", file.name);
+                    // Stage 1: Upload (0→30%)
+                    setAnalysisState("uploading");
+                    setProgress({
+                        state: "uploading",
+                        progress: 0,
+                        message: "Préparation du fichier...",
+                        subMessage: `${file.name}`,
+                    });
+                } else {
+                    console.log("[WoWAnalyzer] Starting WCL direct analysis:", characterInfo?.reportCode);
+                    setAnalysisState("uploading");
+                    setProgress({
+                        state: "uploading",
+                        progress: 20,
+                        message: "Récupération du rapport WCL...",
+                        subMessage: `ID: ${characterInfo?.reportCode}`,
+                    });
+                }
                 startProgressAnimation(0, 30, 1500);
                 await new Promise((r) => setTimeout(r, 1500));
 
@@ -141,24 +153,30 @@ function AnalyzeContent() {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 90000); // 90s timeout
 
-                // Client-side Parsing (To avoid 413 Payload Too Large)
-                const content = await file.text();
-                const validation = validateCombatLog(content);
-                if (!validation.valid) {
-                    throw new Error(validation.error);
-                }
-
-                const events = parseCombatLog(content);
-                const { performance, encounter } = calculateRealMetrics(events, characterInfo?.charName);
-                const geminiContext = parseLogsForGemini(content);
-
                 const formData = new FormData();
-                formData.append("geminiContext", geminiContext);
-                formData.append("performance", JSON.stringify(performance));
-                formData.append("encounter", JSON.stringify(encounter));
                 formData.append("anonymize", anonymize.toString());
                 if (characterInfo) {
                     formData.append("characterInfo", JSON.stringify(characterInfo));
+                }
+
+                if (file) {
+                    // Client-side Parsing (To avoid 413 Payload Too Large)
+                    const content = await file.text();
+                    const validation = validateCombatLog(content);
+                    if (!validation.valid) {
+                        throw new Error(validation.error);
+                    }
+
+                    const events = parseCombatLog(content);
+                    const { performance, encounter } = calculateRealMetrics(events, characterInfo?.charName);
+                    const geminiContext = parseLogsForGemini(content);
+
+                    formData.append("geminiContext", geminiContext);
+                    formData.append("performance", JSON.stringify(performance));
+                    formData.append("encounter", JSON.stringify(encounter));
+                } else {
+                    // If WCL Only, we might need a specific flag or the API handle it
+                    formData.append("wclOnly", "true");
                 }
 
                 let response: Response;
