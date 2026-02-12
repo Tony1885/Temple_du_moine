@@ -5,7 +5,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
-import { calculateRealMetrics, validateCombatLog } from "@/lib/log-parser";
 import { parseLogsForGemini } from "@/lib/parse-logs";
 import { generateMockAnalysis } from "@/lib/mock-data";
 
@@ -13,10 +12,12 @@ export const maxDuration = 120; // 2 minutes timeout for Vercel
 
 export async function POST(request: NextRequest) {
     let performanceStr = "";
+    let encounterStr = "";
     try {
         const formData = await request.formData();
         const geminiContext = formData.get("geminiContext") as string | null;
         performanceStr = formData.get("performance") as string || "";
+        encounterStr = formData.get("encounter") as string || "";
         const anonymize = formData.get("anonymize") === "true";
         const demoMode = formData.get("demo") === "true";
 
@@ -34,12 +35,18 @@ export async function POST(request: NextRequest) {
         }
 
         const realPerformance = JSON.parse(performanceStr);
+        const realEncounter = encounterStr ? JSON.parse(encounterStr) : {
+            bossName: "Plusieurs Boss",
+            difficulty: "Héroïque",
+            dungeonOrRaid: "Analyse en cours",
+            duration: realPerformance.fightDuration,
+            wipeOrKill: "Kill"
+        };
 
         const apiKey = process.env.GOOGLE_AI_API_KEY;
         if (!apiKey) {
             throw new Error("Clé API Gemini manquante.");
         }
-
 
         // Initialisation de Gemini
         const genAI = new GoogleGenerativeAI(apiKey);
@@ -49,7 +56,6 @@ export async function POST(request: NextRequest) {
                 responseMimeType: "application/json",
                 temperature: 0.2,
             },
-            // Disable safety filters for combat logs to avoid false positives (since logs contain "damage", "died", etc.)
             safetySettings: [
                 { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
                 { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -61,6 +67,7 @@ export async function POST(request: NextRequest) {
         const prompt = `
             Tu es un coach expert de World of Warcraft Retail (analyste de logs).
             Analyse les données de combat fournies pour le joueur ${realPerformance.playerName}.
+            Contexte : ${realEncounter.dungeonOrRaid} (${realEncounter.difficulty}).
             
             Réponds UNIQUEMENT avec un objet JSON respectant ce schéma :
             {
@@ -92,13 +99,7 @@ export async function POST(request: NextRequest) {
             data: {
                 performance: realPerformance,
                 aiInsight: aiInsight,
-                encounter: {
-                    bossName: "Donjon / Raid",
-                    difficulty: "Héroïque",
-                    dungeonOrRaid: "Analyse Réelle",
-                    duration: realPerformance.fightDuration,
-                    wipeOrKill: "Effectué",
-                },
+                encounter: realEncounter,
                 metadata: {
                     analyzedAt: new Date().toISOString(),
                     logVersion: "12.1",
@@ -111,10 +112,16 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
         console.error("[API] Erreur Gemini (Fallback activé):", error);
 
-        // Final fallback: Use local analysis to avoid blocking the user
         try {
             if (!performanceStr) throw new Error("Pas de données de performance");
             const realPerformance = JSON.parse(performanceStr);
+            const realEncounter = encounterStr ? JSON.parse(encounterStr) : {
+                bossName: "Donjon / Raid",
+                difficulty: "Héroïque",
+                dungeonOrRaid: "Analyse Locale",
+                duration: realPerformance.fightDuration,
+                wipeOrKill: "Kill"
+            };
             const { generateLocalAnalysis } = require("@/lib/local-analyst");
             const localInsight = generateLocalAnalysis(realPerformance);
 
@@ -123,13 +130,7 @@ export async function POST(request: NextRequest) {
                 data: {
                     performance: realPerformance,
                     aiInsight: localInsight,
-                    encounter: {
-                        bossName: "Donjon / Raid",
-                        difficulty: "Héroïque",
-                        dungeonOrRaid: "Analyse Locale",
-                        duration: realPerformance.fightDuration,
-                        wipeOrKill: "Effectué",
-                    },
+                    encounter: realEncounter,
                     metadata: {
                         analyzedAt: new Date().toISOString(),
                         logVersion: "12.1",

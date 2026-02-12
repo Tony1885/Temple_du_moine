@@ -1,11 +1,10 @@
 // ============================================================
-// Combat Log Parser - WoW Patch 12.1 Compatible
-// Parses WoWCombatLog.txt files from the WoW client
+// Combat Log Parser - WoW Patch 11.x/12.x Compatible
+// Parses WoWCombatLog.txt files with advanced detection
 // ============================================================
 
-import { CombatLogEvent, AnalysisResult } from "./types";
+import { CombatLogEvent, AnalysisResult, WowClass, EncounterInfo } from "./types";
 
-// Relevant event types for analysis
 const RELEVANT_EVENTS = new Set([
     "SPELL_DAMAGE", "SPELL_PERIODIC_DAMAGE", "SWING_DAMAGE", "SWING_DAMAGE_LANDED", "RANGE_DAMAGE",
     "SPELL_HEAL", "SPELL_PERIODIC_HEAL", "SPELL_HEAL_ABSORBED",
@@ -13,39 +12,28 @@ const RELEVANT_EVENTS = new Set([
     "ENCOUNTER_START", "ENCOUNTER_END", "COMBATANT_INFO", "CHALLENGE_MODE_START", "CHALLENGE_MODE_END"
 ]);
 
-/**
- * Parse a raw WoW combat log into structured events.
- */
 export function parseCombatLog(rawLog: string): CombatLogEvent[] {
     const cleanContent = rawLog.startsWith("\uFEFF") ? rawLog.slice(1) : rawLog;
-    const lines = cleanContent.split("\n").filter((line) => line.trim().length > 0);
+    const lines = cleanContent.split("\n");
     const events: CombatLogEvent[] = [];
 
     for (const line of lines) {
-        try {
-            const event = parseLine(line);
-            if (event && RELEVANT_EVENTS.has(event.eventType)) {
-                events.push(event);
-            }
-        } catch { continue; }
+        if (line.length < 20) continue;
+        const event = parseLine(line);
+        if (event && RELEVANT_EVENTS.has(event.eventType)) {
+            events.push(event);
+        }
     }
     return events;
 }
 
 function parseLine(line: string): CombatLogEvent | null {
-    const timestampMatch = line.match(/^(\d{1,2}\/\d{1,2}\s+[\d:]+\.\d+)\s+/);
-    let timestamp = "";
-    let dataStr = "";
+    // Flexible timestamp detection (Standard WoW or ISO)
+    const match = line.match(/^(\d{1,2}\/\d{1,2}\s+[\d:.]+|\d{4}-\d{2}-\d{2}T[\d:.]+)\s+(.+)$/);
+    if (!match) return null;
 
-    if (timestampMatch) {
-        timestamp = timestampMatch[1];
-        dataStr = line.substring(timestampMatch[0].length);
-    } else {
-        const isoMatch = line.match(/^(\d{4}-\d{2}-\d{2}T?[\d:]+\.\d+)\s+/);
-        if (!isoMatch) return null;
-        timestamp = isoMatch[1];
-        dataStr = line.substring(isoMatch[0].length);
-    }
+    const timestamp = match[1];
+    const dataStr = match[2];
 
     const parts = splitCSVLine(dataStr);
     if (parts.length < 2) return null;
@@ -60,12 +48,12 @@ function parseLine(line: string): CombatLogEvent | null {
         destGUID: parts[5] || "",
         destName: cleanName(parts[6] || ""),
         destFlags: parts[7] || "",
-        rawData: parts.slice(eventType.includes("ENCOUNTER") ? 1 : 9),
+        rawData: parts.slice(eventType.includes("ENCOUNTER") || eventType.includes("CHALLENGE") || eventType === "COMBATANT_INFO" ? 1 : 9),
     };
 }
 
 function cleanName(name: string): string {
-    return name.replace(/^"/, "").replace(/"$/, "").trim();
+    return name.replace(/^"/, "").replace(/"$/, "").replace(/nil/, "").trim();
 }
 
 function splitCSVLine(line: string): string[] {
@@ -87,80 +75,161 @@ function splitCSVLine(line: string): string[] {
     return result;
 }
 
-/**
- * Identify the main player (source of most actions) and calculate real stats
- */
-export function calculateRealMetrics(events: CombatLogEvent[]): AnalysisResult["performance"] {
-    const sourceStats: Record<string, { dmg: number; heal: number; events: number; lastTime: number; startTime: number; guid: string }> = {};
+export function calculateRealMetrics(events: CombatLogEvent[]): { performance: AnalysisResult["performance"]; encounter: EncounterInfo } {
+    const stats: Record<string, { dmg: number; heal: number; events: number; lastTime: number; startTime: number; guid: string; name: string }> = {};
+    const avoidableDamage: Record<string, { count: number; total: number }> = {};
+    const timelineData: Record<number, { dps: number; hps: number }> = {};
+
+    let dungeonName = "Donjon Mythique+";
+    let bossName = "Plusieurs Boss";
+    let difficulty: EncounterInfo["difficulty"] = "Normal";
+    let keystoneLevel = 0;
 
     events.forEach(ev => {
-        if (!ev.sourceName || ev.sourceName === "nil") return;
-        if (!sourceStats[ev.sourceName]) {
-            sourceStats[ev.sourceName] = { dmg: 0, heal: 0, events: 0, lastTime: 0, startTime: 0, guid: ev.sourceGUID };
-        }
-
-        const stats = sourceStats[ev.sourceName];
-        stats.events++;
-
-        // Robust timestamp parsing (ISO 8601 or Legacy)
-        let time = 0;
-        if (ev.timestamp.includes("T")) {
-            time = new Date(ev.timestamp).getTime();
-        } else {
-            const timePart = ev.timestamp.split(/\s+/)[1];
-            time = new Date(`2026-01-01T${timePart}`).getTime();
-        }
-
-        if (!isNaN(time)) {
-            if (!stats.startTime) stats.startTime = time;
-            stats.lastTime = time;
-        }
-
-        if (ev.eventType.includes("DAMAGE")) {
-            const amt = parseInt(ev.rawData[ev.eventType.startsWith("SWING") ? 0 : 3]) || 0;
-            stats.dmg += amt;
-        } else if (ev.eventType.includes("HEAL")) {
-            const amt = parseInt(ev.rawData[3]) || 0;
-            stats.heal += amt;
+        if (ev.eventType === "CHALLENGE_MODE_START") {
+            dungeonName = ev.rawData[0] || dungeonName;
+            difficulty = "Mythic+";
+            keystoneLevel = parseInt(ev.rawData[3]) || 0;
+        } else if (ev.eventType === "ENCOUNTER_START") {
+            bossName = ev.rawData[1] || bossName;
         }
     });
 
-    // If no events or no source stats, return default data
-    const players = Object.keys(sourceStats);
-    if (players.length === 0) {
-        return {
-            playerName: "Joueur Inconnu",
+    const year = new Date().getFullYear();
+    events.forEach(ev => {
+        if (ev.eventType.includes("ENCOUNTER") || ev.eventType.includes("CHALLENGE")) return;
+
+        const guid = ev.sourceGUID;
+        if (!guid || !guid.startsWith("Player-")) return;
+
+        if (!stats[guid]) {
+            stats[guid] = { dmg: 0, heal: 0, events: 0, lastTime: 0, startTime: 0, guid: guid, name: ev.sourceName || "Joueur" };
+        }
+
+        const p = stats[guid];
+        p.events++;
+        if (ev.sourceName && ev.sourceName !== "Joueur" && ev.sourceName !== "nil") {
+            p.name = ev.sourceName;
+        }
+
+        // Robust timestamp parsing
+        let time = 0;
+        try {
+            if (ev.timestamp.includes("T")) {
+                time = new Date(ev.timestamp).getTime();
+            } else {
+                const parts = ev.timestamp.split(/\s+/);
+                const timePart = parts[1] || parts[0];
+                time = new Date(`${year}-01-01T${timePart}`).getTime();
+            }
+            if (!isNaN(time)) {
+                if (!p.startTime) p.startTime = time;
+                p.lastTime = time;
+
+                // Timeline bucket (every 5 seconds)
+                const bucket = Math.floor(time / 5000) * 5000;
+                if (!timelineData[bucket]) timelineData[bucket] = { dps: 0, hps: 0 };
+            }
+        } catch (e) { }
+
+        // Metrics
+        if (ev.eventType.includes("DAMAGE")) {
+            const idx = ev.eventType.startsWith("SWING") ? 0 : 3;
+            const amtStr = ev.rawData[idx];
+            const amt = parseInt(amtStr) || 0;
+            p.dmg += amt;
+
+            if (time > 0) {
+                const bucket = Math.floor(time / 5000) * 5000;
+                if (timelineData[bucket]) timelineData[bucket].dps += amt;
+            }
+
+            // Basic Avoidable Damage Check (Damage taken by player from NPCs)
+            if (ev.destGUID === guid && ev.sourceGUID.startsWith("Creature-")) {
+                const spellName = ev.eventType.startsWith("SWING") ? "Attaque de mêlée" : (ev.rawData[1] || "Capacité Inconnue");
+                if (!avoidableDamage[spellName]) avoidableDamage[spellName] = { count: 0, total: 0 };
+                avoidableDamage[spellName].count++;
+                avoidableDamage[spellName].total += amt;
+            }
+        } else if (ev.eventType.includes("HEAL")) {
+            const amt = parseInt(ev.rawData[3]) || 0;
+            p.heal += amt;
+            if (time > 0) {
+                const bucket = Math.floor(time / 5000) * 5000;
+                if (timelineData[bucket]) timelineData[bucket].hps += amt;
+            }
+        }
+    });
+
+    const playerGUIDs = Object.keys(stats);
+    if (playerGUIDs.length === 0) {
+        return { performance: createDefaultPerformance(), encounter: createDefaultEncounter() };
+    }
+
+    const mainGUID = playerGUIDs.sort((a, b) => stats[b].events - stats[a].events)[0];
+    const p = stats[mainGUID];
+    const duration = Math.max(1, (p.lastTime - p.startTime) / 1000);
+
+    // Format Timeline
+    const timeline = Object.keys(timelineData)
+        .map(ts => ({
+            timestamp: parseInt(ts),
+            dps: Math.round(timelineData[parseInt(ts)].dps / 5),
+            hps: Math.round(timelineData[parseInt(ts)].hps / 5)
+        }))
+        .sort((a, b) => a.timestamp - b.timestamp);
+
+    // Format Avoidable Damage
+    const avoidable = Object.entries(avoidableDamage)
+        .map(([name, data]) => ({
+            abilityName: name,
+            hitCount: data.count,
+            totalDamage: data.total,
+            suggestion: "Évitez cette capacité au prochain combat pour réduire la pression sur le soigneur.",
+            severity: (data.total > p.dmg * 0.1 ? "critical" : "warning") as "critical" | "warning"
+        }))
+        .sort((a, b) => b.totalDamage - a.totalDamage)
+        .slice(0, 5);
+
+    return {
+        performance: {
+            playerName: p.name,
             playerClass: "Monk",
             playerSpec: "Brewmaster",
             role: "Tank",
-            totalDamage: 0,
-            totalHealing: 0,
-            dps: 0,
-            hps: 0,
-            fightDuration: 1,
+            totalDamage: p.dmg,
+            totalHealing: p.heal,
+            dps: Math.round(p.dmg / duration),
+            hps: Math.round(p.heal / duration),
+            fightDuration: Math.round(duration),
             percentile: 0,
-            avoidableDamageTaken: [],
+            avoidableDamageTaken: avoidable,
             buffUptime: [],
             cooldownUsage: [],
-            timeline: []
-        };
-    }
+            timeline: timeline
+        },
+        encounter: {
+            bossName,
+            difficulty: difficulty,
+            keystoneLevel: keystoneLevel > 0 ? keystoneLevel : undefined,
+            dungeonOrRaid: dungeonName,
+            duration: Math.round(duration),
+            wipeOrKill: "Kill"
+        }
+    };
+}
 
-    // Find the player with most events (likely the user)
-    const playerName = players.sort((a, b) => sourceStats[b].events - sourceStats[a].events)[0];
-    const p = sourceStats[playerName];
-    const duration = Math.max(1, (p.lastTime - p.startTime) / 1000);
-
+function createDefaultPerformance(): AnalysisResult["performance"] {
     return {
-        playerName,
+        playerName: "Joueur Inconnu",
         playerClass: "Monk",
         playerSpec: "Brewmaster",
         role: "Tank",
-        totalDamage: p.dmg,
-        totalHealing: p.heal,
-        dps: Math.round(p.dmg / duration),
-        hps: Math.round(p.heal / duration),
-        fightDuration: Math.round(duration),
+        totalDamage: 0,
+        totalHealing: 0,
+        dps: 0,
+        hps: 0,
+        fightDuration: 1,
         percentile: 0,
         avoidableDamageTaken: [],
         buffUptime: [],
@@ -169,25 +238,24 @@ export function calculateRealMetrics(events: CombatLogEvent[]): AnalysisResult["
     };
 }
 
-/**
- * Summarize for AI
- */
-export function summarizeForAI(events: CombatLogEvent[]): string {
-    const metrics = calculateRealMetrics(events);
-    return `PLAYER: ${metrics.playerName} (${metrics.playerClass} ${metrics.playerSpec})
-ROLE: ${metrics.role}
-TOTAL DMG: ${metrics.totalDamage}
-TOTAL HEAL: ${metrics.totalHealing}
-DPS: ${metrics.dps}
-DURATION: ${metrics.fightDuration}s
-EVENTS: ${events.length}
-`;
+function createDefaultEncounter(): EncounterInfo {
+    return {
+        bossName: "Donjon / Raid",
+        difficulty: "Normal",
+        dungeonOrRaid: "Analyse Locale",
+        duration: 0,
+        wipeOrKill: "Kill"
+    };
 }
 
 export function validateCombatLog(content: string): { valid: boolean; error?: string } {
     if (!content || content.length < 100) return { valid: false, error: "Fichier trop court" };
-    const eventPattern = /[A-Z_]{8,}/;
-    return eventPattern.test(content.substring(0, 5000)) ? { valid: true } : { valid: false, error: "Format invalide" };
+    return content.includes("COMBAT_LOG_EVENT") || content.includes("_DAMAGE") ? { valid: true } : { valid: false, error: "Format invalide" };
+}
+
+export function summarizeForAI(events: CombatLogEvent[]): string {
+    const { performance: p } = calculateRealMetrics(events);
+    return `PLAYER: ${p.playerName}\nDPS: ${p.dps}\nHEAL: ${p.totalHealing}\nDURATION: ${p.fightDuration}s`;
 }
 
 export function anonymizeNames(events: CombatLogEvent[]): CombatLogEvent[] { return events; }

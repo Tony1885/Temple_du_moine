@@ -148,12 +148,13 @@ function AnalyzeContent() {
                 }
 
                 const events = parseCombatLog(content);
-                const realPerformance = calculateRealMetrics(events);
+                const { performance, encounter } = calculateRealMetrics(events);
                 const geminiContext = parseLogsForGemini(content);
 
                 const formData = new FormData();
                 formData.append("geminiContext", geminiContext);
-                formData.append("performance", JSON.stringify(realPerformance));
+                formData.append("performance", JSON.stringify(performance));
+                formData.append("encounter", JSON.stringify(encounter));
                 formData.append("anonymize", anonymize.toString());
 
                 let response: Response;
