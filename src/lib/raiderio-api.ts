@@ -16,6 +16,7 @@ export interface RaiderIOProfile {
     realm: string;
     profile_url: string;
     profile_banner: string;
+    honorable_kills: number;
     mythic_plus_scores_by_season: {
         season: string;
         scores: {
@@ -40,6 +41,7 @@ export interface RaiderIOProfile {
 export async function fetchRaiderIOProfile(region: string, realm: string, name: string): Promise<RaiderIOProfile | null> {
     try {
         const fields = [
+            "honorable_kills",
             "talents",
             "mythic_plus_scores_by_season:current",
             "raid_progression"

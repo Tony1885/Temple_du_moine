@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowLeft, ExternalLink, ShieldCheck, Trophy, Sword, Target, Loader2, RefreshCw } from "lucide-react"
+import { ArrowLeft, ExternalLink, ShieldCheck, Trophy, Sword, Target, Loader2, RefreshCw, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { fetchRaiderIOProfile, RaiderIOProfile } from "@/lib/raiderio-api"
@@ -157,14 +157,14 @@ export default function AnalyzePage() {
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto mt-6 md:mt-0">
                                         <div className="bg-slate-800/50 p-3 rounded-lg border border-white/5 text-center">
                                             <div className="text-xs text-slate-500 uppercase font-bold mb-1">Score M+</div>
-                                            <div className={`text-xl md:text-2xl font-black ${getScoreColor(profile.mythic_plus_scores_by_season[0]?.scores.all || 0)}`}>
-                                                {profile.mythic_plus_scores_by_season[0]?.scores.all || 0}
+                                            <div className={`text-xl md:text-2xl font-black ${getScoreColor(profile.mythic_plus_scores_by_season?.[0]?.scores.all || 0)}`}>
+                                                {profile.mythic_plus_scores_by_season?.[0]?.scores.all || 0}
                                             </div>
                                         </div>
                                         <div className="bg-slate-800/50 p-3 rounded-lg border border-white/5 text-center">
                                             <div className="text-xs text-slate-500 uppercase font-bold mb-1">H. Kills</div>
                                             <div className="text-xl md:text-2xl font-bold text-white">
-                                                {profile.honorable_kills.toLocaleString()}
+                                                {(profile.honorable_kills || 0).toLocaleString()}
                                             </div>
                                         </div>
                                     </div>
