@@ -81,9 +81,15 @@ export async function fetchWCLRankings(
  */
 async function getWCLAccessToken(): Promise<string | null> {
     const clientId = process.env.WCL_CLIENT_ID;
-    const clientSecret = process.env.WCL_CLIENT_SECRET || process.env.KEY_WACRAFTLOGS;
+    const clientSecret = process.env.WCL_CLIENT_SECRET || process.env.KEY_WACRAFTLOGS || process.env.KEY_WARCRAFTLOGS;
 
-    if (!clientId || !clientSecret) return null;
+    if (!clientId || !clientSecret) {
+        console.warn("[WCL] Missing V2 Credentials (OAuth). Search will use V1 fallback if possible.", {
+            hasClientId: !!clientId,
+            hasSecret: !!clientSecret
+        });
+        return null;
+    }
 
     try {
         const res = await fetch("https://www.warcraftlogs.com/oauth/token", {
@@ -146,19 +152,23 @@ export async function fetchCharacterReports(
     }
 
     // --- Method 2: API v1 Fallback (For single API Key users) ---
-    const apiKey = process.env.KEY_WACRAFTLOGS || process.env.WCL_CLIENT_SECRET;
+    const apiKey = process.env.KEY_WACRAFTLOGS || process.env.KEY_WARCRAFTLOGS || process.env.WCL_CLIENT_SECRET;
     if (apiKey) {
         try {
             const url = `https://www.warcraftlogs.com:443/v1/reports/character/${encodeURIComponent(name)}/${encodeURIComponent(serverSlug)}/${encodeURIComponent(region)}?api_key=${apiKey}`;
+            console.log(`[WCL] Fetching reports (v1) for ${name}-${serverSlug} (${region})`);
             const res = await fetch(url);
             if (res.ok) {
                 const data = await res.json();
+                console.log(`[WCL] Found ${data?.length || 0} reports (v1)`);
                 return data.map((r: any) => ({
                     code: r.id,
                     startTime: r.start,
                     title: r.title,
                     zone: { name: r.zoneName || "Inconnu" }
                 }));
+            } else {
+                console.error("[WCL] v1 API Error:", res.status, await res.text());
             }
         } catch (e) {
             console.error("[WCL] v1 Fallback Error:", e);
