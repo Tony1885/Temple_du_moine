@@ -4,43 +4,54 @@
 
 export function parseLogsForGemini(rawLog: string): string {
     const cleanContent = rawLog.startsWith("\uFEFF") ? rawLog.slice(1) : rawLog;
-    const lines = cleanContent.split("\n").filter(line => line.trim().length > 0);
+    // Fast split without large intermediate arrays
+    const lines = cleanContent.split("\n");
 
-    // 1. Extract Boss Encounters (The most important parts)
-    const encounterLines: string[] = [];
-    let inEncounter = false;
-    let currentEncounter: string[] = [];
+    const MAX_LINES = 8000; // Slightly reduced to be safer with token limits
+    const result: string[] = [];
 
-    lines.forEach(line => {
-        if (line.includes("ENCOUNTER_START")) {
-            inEncounter = true;
-            currentEncounter = [line];
-        } else if (line.includes("ENCOUNTER_END")) {
-            currentEncounter.push(line);
-            encounterLines.push(...currentEncounter);
-            inEncounter = false;
-        } else if (inEncounter) {
-            currentEncounter.push(line);
+    // 1. Find key points (Encounters and Challenge Modes)
+    const encounterRanges: [number, number][] = [];
+    let currentStart = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.includes("CHALLENGE_MODE_START") || line.includes("CHALLENGE_MODE_END")) {
+            result.push(line);
         }
-    });
+        if (line.includes("ENCOUNTER_START")) {
+            currentStart = i;
+        } else if (line.includes("ENCOUNTER_END") && currentStart !== -1) {
+            encounterRanges.push([currentStart, i]);
+            currentStart = -1;
+        }
+    }
 
-    // 2. Extract Mythic+ start/end
-    const dungeonMetas = lines.filter(l => l.includes("CHALLENGE_MODE_START") || l.includes("CHALLENGE_MODE_END"));
+    // 2. Add Encounter lines (Bosses)
+    for (const [start, end] of encounterRanges) {
+        if (result.length >= MAX_LINES) break;
+        // Limit each individual encounter size if it's massive
+        const encounterSize = end - start;
+        if (encounterSize > 5000) {
+            result.push(...lines.slice(start, start + 2500));
+            result.push("... [COMBAT TRUNCATED] ...");
+            result.push(...lines.slice(end - 2500, end + 1));
+        } else {
+            result.push(...lines.slice(start, end + 1));
+        }
+    }
 
-    // 3. Selection of the most relevant events to fit in context
-    // We prioritize encounters, then fill with the last events
-    const MAX_LINES = 10000; // Increased for Gemini 1.5 Flash
-
-    let result = [...dungeonMetas, ...encounterLines];
-
+    // 3. Add high-value context if we have space
     if (result.length < MAX_LINES) {
-        // Add some "trash" combat from the end if we have space
         const remaining = MAX_LINES - result.length;
-        const lastEvents = lines.filter(l => !l.includes("ENCOUNTER_") && !l.includes("CHALLENGE_")).slice(-remaining);
-        result.push(...lastEvents);
-    } else if (result.length > MAX_LINES) {
-        // If still too big, take only the most recent encounters
-        result = result.slice(-MAX_LINES);
+        // Take some context from the very end of the file
+        const endBuffer = lines.slice(-remaining * 2);
+        for (const line of endBuffer) {
+            if (result.length >= MAX_LINES) break;
+            if (!line.includes("ENCOUNTER_") && line.trim().length > 0) {
+                result.push(line);
+            }
+        }
     }
 
     return result.join("\n");
