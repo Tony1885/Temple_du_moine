@@ -90,6 +90,11 @@ export async function POST(request: NextRequest) {
             Analyse les données de combat fournies pour le joueur ${realPerformance.playerName}.
             Contexte : ${realEncounter.dungeonOrRaid} (${realEncounter.difficulty}).
             
+            IMPORTANT : Si nous sommes en Mythic+ (M+), la priorité absolue est la survie et l'utilitaire. 
+            Mourir sur une mécanique de pack ou rater un kick crucial est BIEN PLUS GRAVE que de perdre 5% de DPS.
+            L'IA doit être sévère sur les interrupts manqués et le positionnement.
+            Exemple de ton : "Tu as fait 1.2M DPS, mais tu as raté 4 kicks cruciaux sur les Arcanistes, ce qui a failli wipe le groupe."
+
             DONNÉES WCL HISTORIQUES DU JOUEUR :
             ${wclSummary}
 
@@ -99,11 +104,11 @@ export async function POST(request: NextRequest) {
               "strengths": ["Force 1", "Force 2", "Force 3"],
               "improvements": [{"area": "Domaine", "description": "Détails", "impact": "high", "priority": 1}],
               "overallGrade": "S | A | B | C",
-              "actionPlan": [{"title": "Action", "description": "Détails concrets", "priority": 1, "category": "rotation"}],
-              "detailedAnalysis": "Analyse technique utilisant les données WCL historiques pour situer le joueur"
+              "actionPlan": [{"title": "Action", "description": "Détails concrets", "priority": 1, "category": "rotation | positioning | mechanics"}],
+              "detailedAnalysis": "Analyse technique utilisant les données WCL historiques et les données de combat actuelles. Sois très précis sur les interrupts et les dégâts évitables."
             }
 
-            DONNÉES DU COMBAT ACTUEL :
+            DONNÉES DU COMBAT ACTUEL (LOGS EXTRAITS) :
             ${geminiContext}
         `;
 

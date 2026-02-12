@@ -2,15 +2,17 @@
 
 import React, { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, AlertCircle, X, Shield, Eye, EyeOff, Search, ExternalLink } from "lucide-react";
+import { Upload, FileText, AlertCircle, X, Shield, Eye, EyeOff, Search, ExternalLink, Link as LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DUMMY_MPLUS_REPORTS } from "@/lib/dummy-mplus";
 
 interface DropzoneProps {
-    onFileAccepted: (file: File, anonymize: boolean, characterInfo: { region: string, server: string, charName?: string }) => void;
+    onFileAccepted: (file: File, anonymize: boolean, characterInfo: { region: string, server: string, charName?: string, reportCode?: string }) => void;
+    onTestMPlus?: (data: any) => void;
     isProcessing: boolean;
 }
 
-export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
+export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: DropzoneProps) {
     const [isDragOver, setIsDragOver] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -18,6 +20,7 @@ export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
     const [region, setRegion] = useState("eu");
     const [server, setServer] = useState("");
     const [charName, setCharName] = useState("");
+    const [reportCode, setReportCode] = useState("");
 
     // WCL Search State
     const [isSearching, setIsSearching] = useState(false);
@@ -37,6 +40,13 @@ export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
     }, []);
 
     const handleSearch = async () => {
+        // --- TEST MODE ---
+        if (charName.toUpperCase() === "TEST_M+") {
+            setSearchResults(DUMMY_MPLUS_REPORTS);
+            setError(null);
+            return;
+        }
+
         if (!charName || !server) return;
         setIsSearching(true);
         setError(null);
@@ -45,8 +55,8 @@ export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
             const res = await fetch(`/api/wcl/reports?name=${encodeURIComponent(charName)}&server=${encodeURIComponent(server)}&region=${region}`);
             const data = await res.json();
             if (data.success) {
-                setSearchResults(data.reports);
-                if (data.reports.length === 0) {
+                setSearchResults(data.reports || []);
+                if (!data.reports || data.reports.length === 0) {
                     setError(`Aucun rapport récent trouvé pour ${charName} sur ${server}.`);
                 }
             } else {
@@ -60,7 +70,14 @@ export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
     };
 
     const handleSelectReport = (report: any) => {
-        // Pour l'instant on ouvre sur WCL, mais on pourrait implémenter l'analyse directe via l'API
+        if (report.code.startsWith("MOCK_")) {
+            if (onTestMPlus) {
+                onTestMPlus(report);
+            } else {
+                alert("Mode Test activé pour : " + report.title);
+            }
+            return;
+        }
         window.open(`https://www.warcraftlogs.com/reports/${report.code}`, '_blank');
     };
 
@@ -89,9 +106,9 @@ export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
 
     const handleSubmit = useCallback(() => {
         if (selectedFile) {
-            onFileAccepted(selectedFile, anonymize, { region, server, charName });
+            onFileAccepted(selectedFile, anonymize, { region, server, charName, reportCode });
         }
-    }, [selectedFile, anonymize, region, server, charName, onFileAccepted]);
+    }, [selectedFile, anonymize, region, server, charName, reportCode, onFileAccepted]);
 
     const clearFile = useCallback(() => {
         setSelectedFile(null);
@@ -266,6 +283,23 @@ export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
                                 <option value="kr">Korea (KR)</option>
                                 <option value="tw">Taiwan (TW)</option>
                             </select>
+                        </div>
+                    </div>
+
+                    {/* Direct Report Code */}
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                            OU Code de rapport direct
+                        </label>
+                        <div className="relative">
+                            <LinkIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                            <input
+                                type="text"
+                                placeholder="ex: a1b2c3d4e5f6g7h8"
+                                value={reportCode}
+                                onChange={(e) => setReportCode(e.target.value)}
+                                className="w-full rounded-lg bg-white/5 py-2.5 pl-10 pr-4 text-sm text-white ring-1 ring-white/10 transition-all focus:bg-white/10 focus:outline-none focus:ring-epic-500/50"
+                            />
                         </div>
                     </div>
 

@@ -14,6 +14,7 @@ import { ResultsDashboard } from "@/components/dashboard/results-dashboard";
 import { AnalysisResult, AnalysisState, UploadProgress } from "@/lib/types";
 import { parseCombatLog, calculateRealMetrics, validateCombatLog } from "@/lib/log-parser";
 import { parseLogsForGemini } from "@/lib/parse-logs";
+import { DUMMY_MPLUS_ANALYSIS } from "@/lib/dummy-mplus";
 
 export default function AnalyzePage() {
     return (
@@ -313,6 +314,42 @@ function AnalyzeContent() {
         }
     }, [startProgressAnimation, stopProgressAnimation]);
 
+    const handleTestMPlus = useCallback(async (report: any) => {
+        try {
+            setError(null);
+            setAnalysisState("uploading");
+            setProgress({
+                state: "uploading",
+                progress: 0,
+                message: `Chargement du rapport M+ : ${report.title}`,
+                subMessage: "Extraction des données simulées...",
+            });
+            startProgressAnimation(0, 40, 1000);
+            await new Promise((r) => setTimeout(r, 1000));
+
+            setAnalysisState("analyzing");
+            setProgress((prev) => ({
+                ...prev,
+                state: "analyzing",
+                message: "Gemini analyse les mécaniques M+...",
+                subMessage: "Focus sur les interrupts et le placement",
+            }));
+            startProgressAnimation(40, 95, 3000);
+            await new Promise((r) => setTimeout(r, 3000));
+
+            setResult(DUMMY_MPLUS_ANALYSIS as any);
+            setAnalysisState("complete");
+            setProgress({
+                state: "complete",
+                progress: 100,
+                message: "Analyse terminée (Mode Test) !",
+            });
+        } catch (err) {
+            setAnalysisState("error");
+            setError("Erreur lors du mode test");
+        }
+    }, [startProgressAnimation]);
+
     const handleReset = useCallback(() => {
         stopProgressAnimation();
         setAnalysisState("idle");
@@ -359,6 +396,7 @@ function AnalyzeContent() {
                                 <div className="mt-12">
                                     <Dropzone
                                         onFileAccepted={handleFileAccepted}
+                                        onTestMPlus={handleTestMPlus}
                                         isProcessing={false}
                                     />
                                 </div>
