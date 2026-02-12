@@ -79,15 +79,15 @@ export async function fetchWCLRankings(
 /**
  * Gets an OAuth2 access token from Warcraft Logs (API v2)
  */
-async function getWCLAccessToken(): Promise<string | null> {
+/**
+ * Gets an OAuth2 access token from Warcraft Logs (API v2)
+ */
+export async function getWCLAccessToken(): Promise<string | null> {
     const clientId = process.env.WCL_CLIENT_ID;
-    const clientSecret = process.env.WCL_CLIENT_SECRET || process.env.KEY_WACRAFTLOGS || process.env.KEY_WARCRAFTLOGS;
+    const clientSecret = process.env.WCL_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-        console.warn("[WCL] Missing V2 Credentials (OAuth). Search will use V1 fallback if possible.", {
-            hasClientId: !!clientId,
-            hasSecret: !!clientSecret
-        });
+        console.error("[WCL] Missing V2 Credentials (OAuth). Please configure WCL_CLIENT_ID and WCL_CLIENT_SECRET in .env.local");
         return null;
     }
 
@@ -97,10 +97,51 @@ async function getWCLAccessToken(): Promise<string | null> {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`,
         });
-        if (!res.ok) return null;
+
+        if (!res.ok) {
+            console.error(`[WCL] Token fetch failed: ${res.status} ${res.statusText}`);
+            return null;
+        }
+
         const { access_token } = await res.json();
         return access_token;
-    } catch {
+    } catch (error) {
+        console.error("[WCL] Token fetch error:", error);
+        return null;
+    }
+}
+
+/**
+ * Generic fetcher for Warcraft Logs GraphQL API
+ */
+export async function fetchWarcraftLogsData(query: string, variables: any = {}): Promise<any | null> {
+    const token = await getWCLAccessToken();
+    if (!token) return null;
+
+    try {
+        const res = await fetch("https://www.warcraftlogs.com/api/v2/client", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ query, variables }),
+        });
+
+        if (!res.ok) {
+            console.error(`[WCL] GraphQL request failed: ${res.status}`);
+            return null;
+        }
+
+        const json = await res.json();
+        if (json.errors) {
+            console.error("[WCL] GraphQL Errors:", json.errors);
+            return null;
+        }
+
+        return json.data;
+    } catch (error) {
+        console.error("[WCL] GraphQL Fetch Error:", error);
         return null;
     }
 }
