@@ -40,10 +40,23 @@ export function Dropzone({ onFileAccepted, onTestMPlus, isProcessing }: Dropzone
     }, []);
 
     const handleSearch = async () => {
-        const normalizedCharName = charName.trim().toUpperCase().replace(/[-\s]/g, "_");
+        const query = charName.trim();
+
+        // --- URL Extraction ---
+        if (query.includes("warcraftlogs.com/reports/")) {
+            const match = query.match(/\/reports\/([a-zA-Z0-9]+)/);
+            if (match && match[1]) {
+                setReportCode(match[1]);
+                setCharName("");
+                setError("Code de rapport extrait de l'URL ! Cliquez sur le bouton d'analyse en bas.");
+                return;
+            }
+        }
+
+        const normalizedCommand = query.toUpperCase().replace(/[-\s]/g, "_");
 
         // --- TEST MODE ---
-        if (normalizedCharName === "TEST_MPLUS" || normalizedCharName === "TEST_M+") {
+        if (normalizedCommand === "TEST_MPLUS" || normalizedCommand === "TEST_M+") {
             setSearchResults(DUMMY_MPLUS_REPORTS);
             setError(null);
             return;

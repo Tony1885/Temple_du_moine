@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
         // If WCL ONLY and no file
         if (wclOnly && !geminiContext && reportCode) {
-            const { fetchWCLReportDetails } = require("@/lib/wcl-api");
+            const { fetchWCLReportDetails, fetchWCLFightData } = require("@/lib/wcl-api");
             const reportDetails = await fetchWCLReportDetails(reportCode);
 
             if (!reportDetails) {
@@ -46,13 +46,28 @@ export async function POST(request: NextRequest) {
             }
 
             // Construct a mini-performance object from WCL metadata for fallback
-            const lastFight = reportDetails.fights?.[reportDetails.fights.length - 1];
+            const fights = reportDetails.fights || [];
+            const lastFight = fights[fights.length - 1];
+
+            // Try to fetch actual combat tables for the last fight
+            let combatTable = null;
+            if (lastFight) {
+                combatTable = await fetchWCLFightData(reportCode, lastFight.id);
+            }
+
+            const targetPlayerName = charInfo?.charName || "Joueur Inconnu";
+            const playerData = combatTable?.data?.entries?.find((e: any) =>
+                e.name.toLowerCase() === targetPlayerName.toLowerCase()
+            );
+
             const realPerformance = {
-                playerName: charInfo?.charName || "Joueur Inconnu",
-                playerClass: "Warrior", // Fallback
-                dps: 0,
+                playerName: targetPlayerName,
+                playerClass: playerData?.type || "Warrior",
+                dps: playerData?.total ? Math.round(playerData.total / (lastFight ? (lastFight.endTime - lastFight.startTime) / 1000 : 1)) : 0,
+                totalDamage: playerData?.total || 0,
                 fightDuration: lastFight ? (lastFight.endTime - lastFight.startTime) / 1000 : 0,
             };
+
             const realEncounter = {
                 bossName: lastFight?.name || reportDetails.title,
                 difficulty: lastFight?.keystoneLevel ? "Mythic+" : (lastFight?.difficulty === 4 ? "Heroic" : "Normal"),
@@ -63,22 +78,21 @@ export async function POST(request: NextRequest) {
             };
 
             // Enhanced Gemini Context for WCL-only
-            const enhancedContext = `
-                RAPPORT WCL DÉTECTÉ : ${reportCode}
-                Titre : ${reportDetails.title}
-                Zone : ${reportDetails.zone?.name}
-                Fights : ${reportDetails.fights?.length} combats trouvés.
-                Dernier combat : ${realEncounter.bossName} (${realEncounter.difficulty}${realEncounter.keystoneLevel ? ' +' + realEncounter.keystoneLevel : ''})
+            geminiContext = `
+                ANALYSE DIRECTE WARCRAFT LOGS (SANS FICHIER)
+                Report: ${reportCode}
+                Titre: ${reportDetails.title}
+                Combat: ${realEncounter.bossName} (${realEncounter.difficulty}${realEncounter.keystoneLevel ? ' +' + realEncounter.keystoneLevel : ''})
+                Résultat: ${realEncounter.wipeOrKill}
+                
+                DONNÉES PERFORMANCE DU JOUEUR (${targetPlayerName}) :
+                - DPS: ${realPerformance.dps.toLocaleString()}
+                - Total Dégâts: ${realPerformance.totalDamage.toLocaleString()}
+                - Classe: ${realPerformance.playerClass}
             `;
-
-            geminiContext = enhancedContext;
 
             performanceStr = JSON.stringify(realPerformance);
             encounterStr = JSON.stringify(realEncounter);
-
-            // Override prompt variables for later use
-            // Note: In a real app we would fetch the actual fight JSON tables here.
-            // For now, we tell Gemini we only have metadata.
         }
 
         if (!performanceStr && !wclOnly) {

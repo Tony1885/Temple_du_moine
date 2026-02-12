@@ -113,66 +113,82 @@ export async function fetchCharacterReports(
     serverSlug: string,
     region: string
 ): Promise<any[]> {
+    const upperRegion = region.toUpperCase();
     const token = await getWCLAccessToken();
 
-    // --- Method 1: API v2 (GraphQL) ---
-    if (token) {
-        const query = `
-            query {
-                characterData {
-                    character(name: "${name}", serverSlug: "${serverSlug}", serverRegion: "${region}") {
-                        recentReports(limit: 50) {
-                            data {
-                                code
-                                startTime
-                                title
-                                zone { name }
+    const tryFetch = async (charName: string) => {
+        // --- Method 1: API v2 (GraphQL) ---
+        if (token) {
+            const query = `
+                query {
+                    characterData {
+                        character(name: "${charName}", serverSlug: "${serverSlug}", serverRegion: "${upperRegion}") {
+                            recentReports(limit: 50) {
+                                data {
+                                    code
+                                    startTime
+                                    title
+                                    zone { name }
+                                }
                             }
                         }
                     }
                 }
-            }
-        `;
+            `;
 
-        try {
-            const res = await fetch("https://www.warcraftlogs.com/api/v2/client", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify({ query }),
-            });
-            const data = await res.json();
-            const reports = data.data?.characterData?.character?.recentReports?.data;
-            if (reports) return reports;
-        } catch (e) {
-            console.error("[WCL] v2 Error:", e);
-        }
-    }
-
-    // --- Method 2: API v1 Fallback (For single API Key users) ---
-    const apiKey = process.env.KEY_WACRAFTLOGS || process.env.KEY_WARCRAFTLOGS || process.env.WCL_CLIENT_SECRET;
-    if (apiKey) {
-        try {
-            const url = `https://www.warcraftlogs.com:443/v1/reports/character/${encodeURIComponent(name)}/${encodeURIComponent(serverSlug)}/${encodeURIComponent(region)}?api_key=${apiKey}`;
-            console.log(`[WCL] Fetching reports (v1) for ${name}-${serverSlug} (${region})`);
-            const res = await fetch(url);
-            if (res.ok) {
+            try {
+                const res = await fetch("https://www.warcraftlogs.com/api/v2/client", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ query }),
+                });
                 const data = await res.json();
-                console.log(`[WCL] Found ${data?.length || 0} reports (v1)`);
-                return data.map((r: any) => ({
-                    code: r.id,
-                    startTime: r.start,
-                    title: r.title,
-                    zone: { name: r.zoneName || "Inconnu" }
-                }));
-            } else {
-                console.error("[WCL] v1 API Error:", res.status, await res.text());
+                const reports = data.data?.characterData?.character?.recentReports?.data;
+                if (reports && reports.length > 0) return reports;
+            } catch (e) {
+                console.error("[WCL] v2 Error:", e);
             }
-        } catch (e) {
-            console.error("[WCL] v1 Fallback Error:", e);
         }
+
+        // --- Method 2: API v1 Fallback ---
+        const apiKey = process.env.KEY_WACRAFTLOGS || process.env.KEY_WARCRAFTLOGS || process.env.WCL_CLIENT_SECRET;
+        if (apiKey) {
+            try {
+                const url = `https://www.warcraftlogs.com:443/v1/reports/character/${encodeURIComponent(charName)}/${encodeURIComponent(serverSlug)}/${encodeURIComponent(upperRegion)}?api_key=${apiKey}`;
+                console.log(`[WCL] Fetching reports (v1) for ${charName}-${serverSlug} (${upperRegion})`);
+                const res = await fetch(url);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        return data.map((r: any) => ({
+                            code: r.id,
+                            startTime: r.start,
+                            title: r.title,
+                            zone: { name: r.zoneName || "Inconnu" }
+                        }));
+                    }
+                } else {
+                    console.error("[WCL] v1 API Error:", res.status);
+                }
+            } catch (e) {
+                console.error("[WCL] v1 Fallback Error:", e);
+            }
+        }
+        return null;
+    };
+
+    // Try 1: As provided
+    let results = await tryFetch(name);
+    if (results && results.length > 0) return results;
+
+    // Try 2: Capitalized (Standard WoW name format)
+    const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    if (capitalizedName !== name) {
+        results = await tryFetch(capitalizedName);
+        if (results && results.length > 0) return results;
     }
 
     return [];
@@ -218,6 +234,40 @@ export async function fetchWCLReportDetails(reportCode: string): Promise<any | n
         return data.data?.reportData?.report;
     } catch (e) {
         console.error("[WCL] Error fetching report details:", e);
+        return null;
+    }
+}
+
+/**
+ * Fetches actual combat metrics for a fight
+ */
+export async function fetchWCLFightData(reportCode: string, fightId: number): Promise<any | null> {
+    const token = await getWCLAccessToken();
+    if (!token) return null;
+
+    const query = `
+        query {
+            reportData {
+                report(code: "${reportCode}") {
+                    table(fightIDs: [${fightId}], dataType: DamageDone)
+                }
+            }
+        }
+    `;
+
+    try {
+        const res = await fetch("https://www.warcraftlogs.com/api/v2/client", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ query }),
+        });
+        const data = await res.json();
+        return data.data?.reportData?.report?.table;
+    } catch (e) {
+        console.error("[WCL] Error fetching fight data:", e);
         return null;
     }
 }
