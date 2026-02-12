@@ -47,7 +47,7 @@ export function ForgeModule() {
                     <Zap className="text-blue-400 fill-blue-400/20" />
                     La Forge aux Macros
                 </h2>
-                <p className="text-slate-400">Décris ce que tu veux, l'IA forge le script parfait.</p>
+                <p className="text-slate-400">Décris ce que tu veux, l&apos;IA forge le script parfait.</p>
             </div>
 
             <div className="flex gap-2">

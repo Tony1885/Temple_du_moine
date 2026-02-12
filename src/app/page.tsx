@@ -38,19 +38,19 @@ export default function HomePage() {
                   className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-500/20 bg-violet-500/5 text-violet-400 text-xs font-bold uppercase tracking-widest"
                 >
                   <Sparkles size={14} />
-                  L'IA au service de la victoire
+                  L&apos;IA au service de la victoire
                 </motion.div>
 
                 <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-tight">
                   Maîtrise le Nexus de <br />
                   <span className="bg-gradient-to-r from-violet-400 via-violet-500 to-amber-500 bg-clip-text text-transparent">
-                    Warcraft avec l'IA
+                    Warcraft avec l&apos;IA
                   </span>
                 </h1>
 
                 <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
                   Trois outils, une seule interface pour dominer tes clés Mythic+ et Raids.
-                  Optimise ton gameplay avec les meilleurs experts digitaux d'Azeroth.
+                  Optimise ton gameplay avec les meilleurs experts digitaux d&apos;Azeroth.
                 </p>
               </div>
 

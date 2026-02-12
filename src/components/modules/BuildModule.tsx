@@ -42,7 +42,7 @@ export function BuildModule() {
                         Configurateur
                     </CardTitle>
                     <CardDescription>
-                        Colle ton code de talents Blizzard pour recevoir des suggestions d'optimisation.
+                        Colle ton code de talents Blizzard pour recevoir des suggestions d&apos;optimisation.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -72,7 +72,7 @@ export function BuildModule() {
                     >
                         <Card className="bg-slate-900/30 border-amber-500/20">
                             <CardHeader>
-                                <CardTitle className="text-sm font-bold uppercase tracking-widest text-amber-500">Résultat de l'Expert</CardTitle>
+                                <CardTitle className="text-sm font-bold uppercase tracking-widest text-amber-500">Résultat de l&apos;Expert</CardTitle>
                             </CardHeader>
                             <CardContent className="text-sm leading-relaxed text-gray-300 whitespace-pre-wrap">
                                 {analysis}
