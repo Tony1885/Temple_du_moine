@@ -1,9 +1,9 @@
 /**
  * Raider.io API Helper
- * Fetches character profile and talents
+ * Fetches character profile, scores, progression and talents
  */
 
-export interface RaiderIOCharacter {
+export interface RaiderIOProfile {
     name: string;
     race: string;
     class: string;
@@ -11,20 +11,43 @@ export interface RaiderIOCharacter {
     active_spec_role: string;
     gender: string;
     faction: string;
-    achievement_points: number;
-    honorable_kills: number;
     thumbnail_url: string;
     region: string;
     realm: string;
-    last_crawled_at: string;
     profile_url: string;
     profile_banner: string;
-    talents?: string; // This will hold the Blizzard talent string if fields=talents is used
+    mythic_plus_scores_by_season: {
+        season: string;
+        scores: {
+            all: number;
+            dps: number;
+            healer: number;
+            tank: number;
+        };
+    }[];
+    raid_progression: {
+        [raidSlug: string]: {
+            summary: string;
+            total_bosses: number;
+            normal_bosses_killed: number;
+            heroic_bosses_killed: number;
+            mythic_bosses_killed: number;
+        };
+    };
+    talents?: string; // Blizzard Talent String
 }
 
-export async function fetchCharacterTalents(region: string, realm: string, name: string): Promise<string | null> {
+export async function fetchRaiderIOProfile(region: string, realm: string, name: string): Promise<RaiderIOProfile | null> {
     try {
-        const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${realm}&name=${encodeURIComponent(name)}&fields=talents`;
+        const fields = [
+            "talents",
+            "mythic_plus_scores_by_season:current",
+            "raid_progression"
+        ].join(",");
+
+        const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${realm}&name=${encodeURIComponent(name)}&fields=${fields}`;
+
+        console.log(`[Raider.io] Fetching: ${url}`);
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -33,16 +56,7 @@ export async function fetchCharacterTalents(region: string, realm: string, name:
         }
 
         const data = await response.json();
-
-        // Raider.io returns the "active_spec_talents" in the response when fields=talents is requested
-        // The Blizzard Talent String is usually under 'talents' or similar depending on the specific API version
-        // However, based on the URL provided, let's check the structure.
-
-        if (data.talents) {
-            return data.talents;
-        }
-
-        return null;
+        return data as RaiderIOProfile;
     } catch (error) {
         console.error("[Raider.io] Fetch failed:", error);
         return null;
