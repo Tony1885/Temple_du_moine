@@ -126,8 +126,8 @@ function AnalyzeContent() {
                     ...prev,
                     state: "analyzing",
                     progress: 55,
-                    message: "Gemini 1.5 Flash analyse tes logs...",
-                    subMessage: "Extraction des patterns de jeu 🧠",
+                    message: "Analyse du donjon M+ par Gemini 1.5 Flash...",
+                    subMessage: "Patterns de combat et mécaniques en cours 🧠",
                 }));
 
                 // Animate progress from 55% to 92% while the API call runs
