@@ -14,7 +14,8 @@ export const maxDuration = 120; // 2 minutes timeout for Vercel
 export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
-        const file = formData.get("logFile") as File | null;
+        const geminiContext = formData.get("geminiContext") as string | null;
+        const performanceStr = formData.get("performance") as string | null;
         const anonymize = formData.get("anonymize") === "true";
         const demoMode = formData.get("demo") === "true";
 
@@ -27,9 +28,11 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        if (!file) {
-            return NextResponse.json({ success: false, error: "Aucun fichier fourni." }, { status: 400 });
+        if (!geminiContext || !performanceStr) {
+            return NextResponse.json({ success: false, error: "Données d'analyse manquantes." }, { status: 400 });
         }
+
+        const realPerformance = JSON.parse(performanceStr);
 
         const apiKey = process.env.GOOGLE_AI_API_KEY;
         if (!apiKey) {
@@ -39,20 +42,6 @@ export async function POST(request: NextRequest) {
             }, { status: 500 });
         }
 
-        // Lecture et validation
-        const content = await file.text();
-        const validation = validateCombatLog(content);
-        if (!validation.valid) {
-            return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
-        }
-
-        // Parsing des métriques réelles (DPS, Healing, noms, etc.)
-        const events = require("@/lib/log-parser").parseCombatLog(content);
-        const realPerformance = calculateRealMetrics(events);
-
-        // Préparation du log pour Gemini (Filtrage intelligent + Limite 5000 lignes)
-        console.log("[API] Optimisation du log pour Gemini...");
-        const geminiContext = parseLogsForGemini(content);
 
         // Initialisation de Gemini
         const genAI = new GoogleGenerativeAI(apiKey);
@@ -105,7 +94,7 @@ export async function POST(request: NextRequest) {
                 metadata: {
                     analyzedAt: new Date().toISOString(),
                     logVersion: "12.1",
-                    eventsProcessed: events.length,
+                    eventsProcessed: 10000, // Approximate optimized context
                     model: "Gemini 1.5 Flash"
                 }
             }

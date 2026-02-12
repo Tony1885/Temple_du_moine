@@ -12,6 +12,8 @@ import { ActionPlan } from "@/components/dashboard/action-plan";
 import { EncounterHeader } from "@/components/dashboard/encounter-header";
 import { ResultsDashboard } from "@/components/dashboard/results-dashboard";
 import { AnalysisResult, AnalysisState, UploadProgress } from "@/lib/types";
+import { parseCombatLog, calculateRealMetrics, validateCombatLog } from "@/lib/log-parser";
+import { parseLogsForGemini } from "@/lib/parse-logs";
 
 export default function AnalyzePage() {
     return (
@@ -138,8 +140,20 @@ function AnalyzeContent() {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 90000); // 90s timeout
 
+                // Client-side Parsing (To avoid 413 Payload Too Large)
+                const content = await file.text();
+                const validation = validateCombatLog(content);
+                if (!validation.valid) {
+                    throw new Error(validation.error);
+                }
+
+                const events = parseCombatLog(content);
+                const realPerformance = calculateRealMetrics(events);
+                const geminiContext = parseLogsForGemini(content);
+
                 const formData = new FormData();
-                formData.append("logFile", file);
+                formData.append("geminiContext", geminiContext);
+                formData.append("performance", JSON.stringify(realPerformance));
                 formData.append("anonymize", anonymize.toString());
 
                 let response: Response;
