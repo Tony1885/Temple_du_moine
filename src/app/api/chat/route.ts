@@ -33,10 +33,12 @@ export async function POST(request: NextRequest) {
         console.error("[Chat API] Error:", error.message);
 
         let technicalDetails = error.message;
+        const region = process.env.VERCEL_REGION || "local";
+
         if (technicalDetails.includes("API key not valid")) {
             technicalDetails = "Clé API invalide. Vérifie-la dans Google AI Studio.";
         } else if (technicalDetails.includes("supported")) {
-            technicalDetails = "Région non supportée (Vercel Serverless location).";
+            technicalDetails = `Région [${region}] non supportée par Google Gemini.`;
         }
 
         return NextResponse.json({
