@@ -115,7 +115,7 @@ export async function fetchCharacterReports(
             query {
                 characterData {
                     character(name: "${name}", serverSlug: "${serverSlug}", serverRegion: "${region}") {
-                        recentReports(limit: 10) {
+                        recentReports(limit: 50) {
                             data {
                                 code
                                 startTime
@@ -158,7 +158,7 @@ export async function fetchCharacterReports(
                     startTime: r.start,
                     title: r.title,
                     zone: { name: r.zoneName || "Inconnu" }
-                })).slice(0, 10);
+                }));
             }
         } catch (e) {
             console.error("[WCL] v1 Fallback Error:", e);

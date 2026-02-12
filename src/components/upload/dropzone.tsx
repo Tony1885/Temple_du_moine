@@ -297,7 +297,7 @@ export function Dropzone({ onFileAccepted, isProcessing }: DropzoneProps) {
                                 <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2">
                                     Rapports trouvés
                                 </p>
-                                <div className="max-h-48 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+                                <div className="max-h-80 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
                                     {searchResults.map((report: any) => (
                                         <button
                                             key={report.code}
