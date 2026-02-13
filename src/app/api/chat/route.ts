@@ -26,7 +26,12 @@ export async function POST(request: NextRequest) {
         const systemPrompt = SYSTEM_PROMPTS[mode as keyof typeof SYSTEM_PROMPTS] || SYSTEM_PROMPTS.build;
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        // Use gemini-1.5-flash-latest by default, or GOOGLE_AI_MODEL env var if set
+        const modelName = process.env.GOOGLE_AI_MODEL || "gemini-1.5-flash-latest";
+        console.log(`[Chat API] Using model: ${modelName}`);
+
+        const model = genAI.getGenerativeModel({ model: modelName });
 
         if (message.includes("warcraftlogs.com/reports/")) {
             console.log("[Chat API] Analyzing WCL Log...");
