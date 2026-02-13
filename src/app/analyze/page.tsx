@@ -44,13 +44,13 @@ export default function AnalyzePage() {
 
                     setProfile(data)
 
+                    // If talents are present, send them. If not, send Class/Spec context.
                     if (data.talents) {
                         analyzeTalents(data.talents)
                     } else {
-                        // Sometimes Raider.io doesn't return talents or 'active_spec_talents' field is needed
-                        // But our API helper tries 'talents'. Let's handle missing talents.
-                        // Maybe try 'active_spec_name' + 'class' to prompt AI? No, we need the string.
-                        setError("Le personnage a été trouvé, mais Raider.io n'a pas renvoyé de talents pour la spé active.")
+                        // Fallback: Send Context
+                        const context = `Je n'ai pas le code exact des talents, mais voici le profil : Classe ${data.class}, Spécialisation ${data.active_spec_name} (${data.active_spec_role}). Donne-moi une rotation META optimale pour cette spécialisation en Raid et M+.`;
+                        analyzeTalents(context)
                     }
                 } catch (err: any) {
                     setError(err.message || "Erreur lors du chargement du profil.")
@@ -92,6 +92,12 @@ export default function AnalyzePage() {
         return "text-green-400"
     }
 
+    // Helper: Banner Image
+    const getBannerUrl = (banner: string | undefined) => {
+        if (banner && banner.startsWith("http")) return `url(${banner})`;
+        return "url(https://render.worldofwarcraft.com/eu/zones/zone-32.jpg)"; // Default fallback
+    }
+
     return (
         <div className="min-h-screen bg-[#020617] pt-24 pb-12 px-4">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -120,7 +126,7 @@ export default function AnalyzePage() {
                             {/* Banner Background */}
                             <div
                                 className="absolute top-0 left-0 w-full h-48 bg-cover bg-center opacity-30 mask-bottom"
-                                style={{ backgroundImage: profile.profile_banner ? `url(${profile.profile_banner})` : undefined }}
+                                style={{ backgroundImage: getBannerUrl(profile.profile_banner) }}
                             />
                             <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-transparent to-slate-900/90" />
 
