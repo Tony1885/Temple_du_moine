@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink, ShieldCheck, Trophy, Sword, Target, Loader2, R
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { fetchRaiderIOProfile, RaiderIOProfile } from "@/lib/raiderio-api"
+import { AnalysisResult, AnalysisData } from "@/components/modules/AnalysisResult"
 
 export default function AnalyzePage() {
     const searchParams = useSearchParams()
@@ -98,6 +99,41 @@ export default function AnalyzePage() {
         return "url(https://render.worldofwarcraft.com/eu/zones/zone-32.jpg)"; // Default fallback
     }
 
+    // Helper: Parse Analysis
+    const renderAnalysisContent = () => {
+        try {
+            // Check if analysis string starts with { and ends with } to be a candidate for JSON
+            const trimmed = analysis.trim();
+            if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+                const parsed = JSON.parse(trimmed) as AnalysisData;
+                // Simple check to ensure it has the expected structure
+                if (parsed.talents && parsed.gear && parsed.rotation) {
+                    return <AnalysisResult data={parsed} />;
+                }
+            }
+        } catch (e) {
+            // Not valid JSON, fall back to text
+        }
+
+        return (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <Card className="bg-slate-900/40 border-amber-500/20">
+                    <CardHeader>
+                        <CardTitle className="text-amber-500 uppercase tracking-widest flex items-center gap-2">
+                            <Sparkles size={18} />
+                            Analyse Optimale du Build
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="prose prose-invert prose-amber max-w-none text-gray-300">
+                        <div className="whitespace-pre-wrap leading-relaxed">
+                            {analysis}
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-[#020617] pt-24 pb-12 px-4">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -112,15 +148,16 @@ export default function AnalyzePage() {
                     </div>
                 )}
 
-                {/* Profile Section (Raider.io only) */}
-                {loadingProfile && (
+                {/* Loading State for Profile */}
+                {!manualCode && loadingProfile && (
                     <div className="flex flex-col items-center justify-center p-12 bg-white/5 rounded-xl animate-pulse">
                         <Loader2 className="animate-spin mb-4 text-violet-500" size={32} />
                         <p className="text-slate-400">Récupération des données Raider.io...</p>
                     </div>
                 )}
 
-                {profile && (
+                {/* Profile Data Display (Only if not manual code) */}
+                {!manualCode && profile && (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <Card className="bg-slate-900/50 border-white/10 backdrop-blur-xl overflow-hidden relative">
                             {/* Banner Background */}
@@ -186,41 +223,11 @@ export default function AnalyzePage() {
                         <Card className="bg-slate-900/30 border-amber-500/20 min-h-[300px] flex items-center justify-center">
                             <div className="text-center space-y-4">
                                 <div className="h-16 w-16 mx-auto rounded-full border-t-2 border-b-2 border-amber-500 animate-spin" />
-                                <p className="text-amber-400 font-medium animate-pulse">L&apos;IA analyse les talents et la rotation...</p>
+                                <p className="text-amber-400 font-medium animate-pulse">L&apos;IA analyse les données...</p>
                             </div>
                         </Card>
                     ) : (
-                        manualCode ? (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                <Card className="bg-slate-900/40 border-amber-500/20">
-                                    <CardHeader>
-                                        <CardTitle className="text-amber-500 uppercase tracking-widest flex items-center gap-2">
-                                            <Sparkles size={18} />
-                                            Analyse Optimale du Build
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="prose prose-invert prose-amber max-w-none text-gray-300">
-                                        <div className="whitespace-pre-wrap leading-relaxed">
-                                            {analysis}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        ) : profile && analysis ? (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                <Card className="bg-slate-900/40 border-amber-500/20">
-                                    <CardHeader>
-                                        <CardTitle className="text-amber-500 uppercase tracking-widest flex items-center gap-2">
-                                            <Sparkles size={18} />
-                                            Analyse Optimale du Build
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="whitespace-pre-wrap leading-relaxed text-gray-300">
-                                        {analysis}
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        ) : null
+                        analysis && renderAnalysisContent()
                     )}
                 </div>
             </div>

@@ -288,6 +288,9 @@ export async function fetchWCLReportDetails(reportCode: string): Promise<any | n
 /**
  * Fetches actual combat metrics for a fight
  */
+/**
+ * Fetches actual combat metrics for a fight
+ */
 export async function fetchWCLFightData(reportCode: string, fightId: number): Promise<any | null> {
     const token = await getWCLAccessToken();
     if (!token) return null;
@@ -315,6 +318,59 @@ export async function fetchWCLFightData(reportCode: string, fightId: number): Pr
         return data.data?.reportData?.report?.table;
     } catch (e) {
         console.error("[WCL] Error fetching fight data:", e);
+        return null;
+    }
+}
+
+/**
+ * Fetches specific performance data (CombatantInfo + Cast Timeline) for analysis
+ */
+export async function getLogPerformance(reportCode: string, fightId: number, sourceId?: number): Promise<any | null> {
+    const token = await getWCLAccessToken();
+    if (!token) return null;
+
+    const sourceFilter = sourceId ? `, sourceID: ${sourceId}` : "";
+
+    // We fetch two things:
+    // 1. Table (Summary) -> Gets us Composition, Gear, Talents (in combatantInfo)
+    // 2. Events (Casts) -> Gets us the rotation timeline
+    const query = `
+        query {
+            reportData {
+                report(code: "${reportCode}") {
+                    summary: table(fightIDs: [${fightId}], dataType: Summary${sourceFilter})
+                    events(fightIDs: [${fightId}], dataType: Casts${sourceFilter}, limit: 2000) {
+                        data
+                        nextPageTimestamp
+                    }
+                }
+            }
+        }
+    `;
+
+    try {
+        const res = await fetch("https://www.warcraftlogs.com/api/v2/client", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ query }),
+        });
+
+        const json = await res.json();
+        if (json.errors) {
+            console.error("[WCL] getLogPerformance errors:", json.errors);
+            return null;
+        }
+
+        const report = json.data?.reportData?.report;
+        return {
+            summary: report?.summary,
+            events: report?.events?.data
+        };
+    } catch (e) {
+        console.error("[WCL] Error in getLogPerformance:", e);
         return null;
     }
 }
