@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // Use gemini-1.5-flash by default (stable), or GOOGLE_AI_MODEL env var if set
-        const modelName = process.env.GOOGLE_AI_MODEL || "gemini-1.5-flash";
+        // FORCED: Use gemini-1.5-flash (stable) and ignore Env Var to prevent 404s
+        const modelName = "gemini-1.5-flash";
         console.log(`[Chat API] Using model: ${modelName}`);
 
         const model = genAI.getGenerativeModel({ model: modelName });
