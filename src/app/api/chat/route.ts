@@ -11,7 +11,9 @@ export async function POST(request: NextRequest) {
 
         console.log(`[Chat API] Start - Mode: ${mode}`);
 
+
         const apiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_AI_API_KEY;
+        // Ensure API key is present for deployment
 
         if (!apiKey) {
             console.error("[Chat API] CRITICAL: GOOGLE_AI_API_KEY is not defined");
