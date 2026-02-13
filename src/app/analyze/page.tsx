@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { fetchRaiderIOProfile, RaiderIOProfile } from "@/lib/raiderio-api"
 import { AnalysisResult, AnalysisData } from "@/components/modules/AnalysisResult"
 
-export default function AnalyzePage() {
+function AnalyzeContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
 
@@ -232,5 +232,17 @@ export default function AnalyzePage() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function AnalyzePage() {
+    return (
+        <React.Suspense fallback={
+            <div className="min-h-screen bg-[#020617] flex items-center justify-center">
+                <Loader2 className="animate-spin text-white mb-4" size={32} />
+            </div>
+        }>
+            <AnalyzeContent />
+        </React.Suspense>
     )
 }
