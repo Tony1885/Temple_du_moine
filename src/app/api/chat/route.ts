@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         const systemPrompt = SYSTEM_PROMPTS[mode as keyof typeof SYSTEM_PROMPTS] || SYSTEM_PROMPTS.build;
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         if (message.includes("warcraftlogs.com/reports/")) {
             console.log("[Chat API] Analyzing WCL Log...");
@@ -97,8 +97,13 @@ export async function POST(request: NextRequest) {
 
         if (technicalDetails.includes("API key not valid")) {
             technicalDetails = "Clé API invalide. Vérifie-la dans Google AI Studio.";
-        } else if (technicalDetails.includes("supported")) {
-            technicalDetails = `La région Vercel [${region}] est bloquée par Google. Change la région des 'Functions' en Washington (iad1) ou San Francisco (sfo1) dans les réglages Vercel et REDÉPLOIE.`;
+        } else if (technicalDetails.includes("supported") || technicalDetails.includes("location")) {
+            // This error usually means "User location is not supported"
+            if (region === "local") {
+                technicalDetails = "Ton IP actuelle est bloquée par l'API Google (Zone géographique non supportée ou API Key restreinte). Essaie un VPN (USA) ou une autre clé.";
+            } else {
+                technicalDetails = `La région Vercel [${region}] est bloquée par Google. Change la région des 'Functions' en Washington (iad1) ou San Francisco (sfo1).`;
+            }
         }
 
         return NextResponse.json({

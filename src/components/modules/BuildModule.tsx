@@ -28,6 +28,12 @@ export function BuildModule() {
     const handleImportFromRio = async () => {
         if (!charName.trim()) return
         setIsLoading(true)
+
+        if (charName.includes("warcraftlogs.com")) {
+            router.push(`/analyze?code=${encodeURIComponent(charName)}`)
+            return
+        }
+
         // Redirection vers la page d'analyse avec les infos Raider.io
         router.push(`/analyze?region=${region}&realm=${realm}&name=${encodeURIComponent(charName)}`)
     }
@@ -46,24 +52,8 @@ export function BuildModule() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Tabs defaultValue="rio" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 mb-8 bg-slate-900/50 border border-white/5 p-1 h-auto rounded-xl">
-                            <TabsTrigger
-                                value="rio"
-                                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-amber-500 data-[state=active]:text-black font-bold py-3 rounded-lg transition-all"
-                            >
-                                Import Raider.io
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="manual"
-                                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-violet-500 data-[state=active]:text-white font-bold py-3 rounded-lg transition-all"
-                            >
-                                Code Manuel
-                            </TabsTrigger>
-                        </TabsList>
-
-                        {/* --- RAIDER.IO TAB --- */}
-                        <TabsContent value="rio" className="space-y-6">
+                    <CardContent>
+                        <div className="space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 tracking-widest">Région</label>
@@ -85,13 +75,13 @@ export function BuildModule() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 tracking-widest">Nom du personnage</label>
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 tracking-widest">Nom du personnage OU Lien WCL</label>
                                 <div className="relative group">
                                     <Input
                                         value={charName}
                                         onChange={(e) => setCharName(e.target.value)}
                                         onKeyDown={(e) => e.key === "Enter" && handleImportFromRio()}
-                                        placeholder="Ex: Sylvanas..."
+                                        placeholder="Pseudo (ex: Sylvanas) ou Lien WarcraftLogs..."
                                         className="bg-slate-900/50 border-white/10 h-14 pl-12 text-xl font-bold text-white focus:border-amber-500/50 transition-colors placeholder:text-slate-600"
                                     />
                                     <User className="absolute left-4 top-4 text-slate-500 group-focus-within:text-amber-500 transition-colors" size={24} />
@@ -106,27 +96,8 @@ export function BuildModule() {
                                 {isLoading ? <Loader2 className="mr-3 animate-spin" size={24} /> : <Search className="mr-3" size={24} />}
                                 Récupérer & Analyser
                             </Button>
-                        </TabsContent>
-
-                        {/* --- MANUAL CODE TAB --- */}
-                        <TabsContent value="manual" className="space-y-6">
-                            <Textarea
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
-                                placeholder="Colle ta chaîne de talents Blizzard ici (commence par B4E...)"
-                                className="min-h-[220px] font-mono text-xs bg-slate-900/50 border-white/10 resize-none p-6 leading-relaxed focus:border-violet-500/50 transition-colors"
-                            />
-                            <Button
-                                onClick={() => handleAnalyze()}
-                                className="w-full h-14 text-lg uppercase font-black tracking-widest shadow-lg shadow-violet-900/20 hover:shadow-violet-500/20 transition-all transform hover:-translate-y-0.5"
-                                variant="violet"
-                                disabled={isLoading || !code.trim()}
-                            >
-                                {isLoading ? <Loader2 className="mr-3 animate-spin" size={24} /> : <Sparkles className="mr-3" size={24} />}
-                                Lancer l&apos;Analyse
-                            </Button>
-                        </TabsContent>
-                    </Tabs>
+                        </div>
+                    </CardContent>
                 </CardContent>
             </Card>
         </div>
