@@ -2,28 +2,18 @@
 
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
-import { ClipboardList, Sparkles, Loader2, Search, User } from "lucide-react"
+import { Loader2, Search, User, Globe, Server, PlayCircle, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { REGIONS, REALMS } from "@/lib/constants/realms"
 
 export function BuildModule() {
     const router = useRouter()
-    const [code, setCode] = useState("")
     const [charName, setCharName] = useState("")
     const [realm, setRealm] = useState("Hyjal")
     const [region, setRegion] = useState("eu")
     const [isLoading, setIsLoading] = useState(false)
-
-    const handleAnalyze = async () => {
-        if (!code.trim()) return
-        setIsLoading(true)
-        // Redirection vers la page d'analyse avec le code en paramètre
-        router.push(`/analyze?code=${encodeURIComponent(code)}`)
-    }
 
     const handleImportFromRio = async () => {
         if (!charName.trim()) return
@@ -34,8 +24,13 @@ export function BuildModule() {
             return
         }
 
-        // Redirection vers la page d'analyse avec les infos Raider.io
         router.push(`/analyze?region=${region}&realm=${realm}&name=${encodeURIComponent(charName)}`)
+    }
+
+    const loadDemo = () => {
+        setRegion("eu")
+        setRealm("Tarren Mill")
+        setCharName("Naowh")
     }
 
     return (
@@ -59,24 +54,45 @@ export function BuildModule() {
                 <CardContent className="p-8">
                     <div className="space-y-6">
                         {/* Region & Realm Row */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Région</label>
-                                <Input
-                                    value={region}
-                                    onChange={(e) => setRegion(e.target.value)}
-                                    placeholder="eu"
-                                    className="bg-white/5 border-white/10 h-12 text-center text-lg font-mono text-white focus:border-amber-500/50 focus:ring-amber-500/20 transition-all rounded-xl"
-                                />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2 relative">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1 flex items-center gap-1">
+                                    <Globe size={12} /> Région
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        value={region}
+                                        onChange={(e) => setRegion(e.target.value)}
+                                        className="w-full bg-white/5 border-white/10 h-12 px-4 appearance-none text-white focus:border-amber-500/50 focus:ring-amber-500/20 transition-all rounded-xl cursor-pointer"
+                                    >
+                                        {REGIONS.map((r) => (
+                                            <option key={r.value} value={r.value} className="bg-slate-900 text-white">
+                                                {r.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                                        ▼
+                                    </div>
+                                </div>
                             </div>
+
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Serveur</label>
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1 flex items-center gap-1">
+                                    <Server size={12} /> Serveur
+                                </label>
                                 <Input
+                                    list="realms-list"
                                     value={realm}
                                     onChange={(e) => setRealm(e.target.value)}
-                                    placeholder="Hyjal"
-                                    className="bg-white/5 border-white/10 h-12 text-center text-lg font-medium text-white focus:border-amber-500/50 focus:ring-amber-500/20 transition-all rounded-xl"
+                                    placeholder="Rechercher un serveur..."
+                                    className="bg-white/5 border-white/10 h-12 text-white focus:border-amber-500/50 focus:ring-amber-500/20 transition-all rounded-xl"
                                 />
+                                <datalist id="realms-list">
+                                    {(REALMS[region as keyof typeof REALMS] || REALMS.eu).map((r) => (
+                                        <option key={r} value={r} />
+                                    ))}
+                                </datalist>
                             </div>
                         </div>
 
@@ -97,23 +113,34 @@ export function BuildModule() {
                             </div>
                         </div>
 
-                        {/* Action Button */}
-                        <Button
-                            onClick={handleImportFromRio}
-                            className="w-full h-14 text-lg uppercase font-black tracking-widest bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] transition-all transform hover:-translate-y-0.5 rounded-xl border-none"
-                            disabled={isLoading || !charName.trim()}
-                        >
-                            {isLoading ? (
-                                <span className="flex items-center gap-2">
-                                    <Loader2 className="animate-spin" size={20} /> Analyse en cours...
-                                </span>
-                            ) : (
-                                <span className="flex items-center gap-2">
-                                    <Sparkles className="fill-black/20" size={20} />
-                                    Lancer l&apos;Analyse
-                                </span>
-                            )}
-                        </Button>
+                        {/* Action Buttons */}
+                        <div className="space-y-3">
+                            <Button
+                                onClick={handleImportFromRio}
+                                className="w-full h-14 text-lg uppercase font-black tracking-widest bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] transition-all transform hover:-translate-y-0.5 rounded-xl border-none"
+                                disabled={isLoading || !charName.trim()}
+                            >
+                                {isLoading ? (
+                                    <span className="flex items-center gap-2">
+                                        <Loader2 className="animate-spin" size={20} /> Analyse en cours...
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-2">
+                                        <Sparkles className="fill-black/20" size={20} />
+                                        Lancer l&apos;Analyse
+                                    </span>
+                                )}
+                            </Button>
+
+                            <Button
+                                variant="ghost"
+                                onClick={loadDemo}
+                                className="w-full text-xs uppercase tracking-widest text-slate-500 hover:text-amber-400 hover:bg-white/5"
+                            >
+                                <PlayCircle size={14} className="mr-2" />
+                                Essayer avec une démo (Naowh - Tarren Mill)
+                            </Button>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
