@@ -137,7 +137,7 @@ export function SpecGuide({
                         {/* Builds */}
                         <GuideSection title="Talents & Builds" icon={<Zap size={20} />}>
                             <p>
-                                Pour performer, il est crucial d'avoir les bons talents. Voici les codes d'importation pour les builds standards.
+                                Pour performer, il est crucial d&apos;avoir les bons talents. Voici les codes d&apos;importation pour les builds standards.
                             </p>
                             <div className="grid gap-4 mt-4">
                                 <div className="p-4 rounded-xl bg-black/40 border border-white/5">

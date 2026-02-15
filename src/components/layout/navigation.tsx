@@ -79,7 +79,7 @@ export function Footer() {
                         </Link>
                         <p className="mt-4 max-w-sm text-sm leading-relaxed text-gray-500">
                             Le guide ultime pour les Moines World of Warcraft francophones.
-                            Maîtrisez le Chi, l'Énergie et la Brume.
+                            Maîtrisez le Chi, l&apos;Énergie et la Brume.
                         </p>
                     </div>
 

@@ -46,7 +46,7 @@ export default function MistweaverPage() {
                             <h4 className="font-bold text-teal-300 mb-2">Fistweaving (Melee)</h4>
                             <p className="text-sm">
                                 Utilise <strong>Enseignements ancestraux</strong> pour convertir les dégâts en soins.
-                                Vous êtes au contact, frappez avec <strong>Paume du tigre</strong>, <strong>Frappe du voile noir</strong> et <strong>Coupo d'pied du soleil levant</strong>.
+                                Vous êtes au contact, frappez avec <strong>Paume du tigre</strong>, <strong>Frappe du voile noir</strong> et <strong>Coupo d&apos;pied du soleil levant</strong>.
                                 Très fort en Mythique+ et Raid pour le DPS passif.
                             </p>
                         </div>
