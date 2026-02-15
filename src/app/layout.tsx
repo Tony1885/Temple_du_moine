@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Navbar, Footer } from "@/components/layout/navigation";
 
 export const metadata: Metadata = {
-  title: "WoW Analyzeur AI — Optimise ton build de talents",
+  title: "Temple du Moine — Guide & Analyse WoW",
   description:
-    "Analyseur de talents intelligent pour WoW Retail. Décrypte tes codes Blizzard et reçois une rotation optimale générée par l'IA.",
+    "Le guide ultime pour les Moines Maître Brasseur, Tisse-Brume et Marche-Vent. Builds, stats, consommables et analyse IA.",
   keywords: [
     "WoW",
-    "World of Warcraft",
-    "IA",
-    "Talents",
+    "Monk",
+    "Moine",
+    "Brewmaster",
+    "Mistweaver",
+    "Windwalker",
+    "Guide",
     "Build",
-    "Rotation",
-    "Performance",
   ],
 };
 
@@ -31,8 +33,10 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="min-h-screen bg-[#020617] text-gray-200 antialiased selection:bg-violet-500/30">
+      <body className="min-h-screen bg-[#020617] text-gray-200 antialiased selection:bg-monk-500/30">
+        <Navbar />
         <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );

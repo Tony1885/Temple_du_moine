@@ -117,14 +117,14 @@ function AnalyzeContent() {
 
         return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <Card className="bg-slate-900/40 border-amber-500/20">
+                <Card className="bg-slate-900/40 border-monk-500/20">
                     <CardHeader>
-                        <CardTitle className="text-amber-500 uppercase tracking-widest flex items-center gap-2">
+                        <CardTitle className="text-monk-500 uppercase tracking-widest flex items-center gap-2">
                             <Sparkles size={18} />
                             Analyse Optimale du Build
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="prose prose-invert prose-amber max-w-none text-gray-300">
+                    <CardContent className="prose prose-invert prose-emerald max-w-none text-gray-300">
                         <div className="whitespace-pre-wrap leading-relaxed">
                             {analysis}
                         </div>
@@ -151,7 +151,7 @@ function AnalyzeContent() {
                 {/* Loading State for Profile */}
                 {!manualCode && loadingProfile && (
                     <div className="flex flex-col items-center justify-center p-12 bg-white/5 rounded-xl animate-pulse">
-                        <Loader2 className="animate-spin mb-4 text-violet-500" size={32} />
+                        <Loader2 className="animate-spin mb-4 text-monk-500" size={32} />
                         <p className="text-slate-400">Récupération des données Raider.io...</p>
                     </div>
                 )}
@@ -188,7 +188,7 @@ function AnalyzeContent() {
                                             </a>
                                         </h1>
                                         <div className="flex flex-wrap items-center gap-3 text-sm md:text-base text-slate-300">
-                                            <span className="font-bold text-amber-400">{profile.active_spec_name} {profile.class}</span>
+                                            <span className="font-bold text-monk-400">{profile.active_spec_name} {profile.class}</span>
                                             <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
                                             <span>{profile.race}</span>
                                             <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
@@ -220,10 +220,10 @@ function AnalyzeContent() {
                 {/* Analysis Section */}
                 <div className="space-y-6">
                     {loadingAnalysis ? (
-                        <Card className="bg-slate-900/30 border-amber-500/20 min-h-[300px] flex items-center justify-center">
+                        <Card className="bg-slate-900/30 border-monk-500/20 min-h-[300px] flex items-center justify-center">
                             <div className="text-center space-y-4">
-                                <div className="h-16 w-16 mx-auto rounded-full border-t-2 border-b-2 border-amber-500 animate-spin" />
-                                <p className="text-amber-400 font-medium animate-pulse">L&apos;IA analyse les données...</p>
+                                <div className="h-16 w-16 mx-auto rounded-full border-t-2 border-b-2 border-monk-500 animate-spin" />
+                                <p className="text-monk-400 font-medium animate-pulse">L&apos;IA analyse les données...</p>
                             </div>
                         </Card>
                     ) : (

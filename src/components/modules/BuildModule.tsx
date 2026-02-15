@@ -37,12 +37,12 @@ export function BuildModule() {
         <div className="w-full">
             <Card className="bg-black/60 border-white/10 backdrop-blur-2xl overflow-hidden shadow-2xl relative">
                 {/* Top Gradient Line */}
-                <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-50" />
+                <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-monk-500 to-transparent opacity-50" />
 
                 <CardHeader className="text-center pb-2 pt-8">
                     <CardTitle className="flex flex-col items-center gap-2 text-white text-2xl font-black uppercase tracking-tight">
-                        <div className="p-3 rounded-full bg-amber-500/10 border border-amber-500/20 mb-2">
-                            <User className="text-amber-500" size={24} />
+                        <div className="p-3 rounded-full bg-monk-500/10 border border-monk-500/20 mb-2">
+                            <User className="text-monk-500" size={24} />
                         </div>
                         Analyser un Personnage
                     </CardTitle>
@@ -63,7 +63,7 @@ export function BuildModule() {
                                     <select
                                         value={region}
                                         onChange={(e) => setRegion(e.target.value)}
-                                        className="w-full bg-white/5 border-white/10 h-12 px-4 appearance-none text-white focus:border-amber-500/50 focus:ring-amber-500/20 transition-all rounded-xl cursor-pointer"
+                                        className="w-full bg-white/5 border-white/10 h-12 px-4 appearance-none text-white focus:border-monk-500/50 focus:ring-monk-500/20 transition-all rounded-xl cursor-pointer"
                                     >
                                         {REGIONS.map((r) => (
                                             <option key={r.value} value={r.value} className="bg-slate-900 text-white">
@@ -86,7 +86,7 @@ export function BuildModule() {
                                     value={realm}
                                     onChange={(e) => setRealm(e.target.value)}
                                     placeholder="Rechercher un serveur..."
-                                    className="bg-white/5 border-white/10 h-12 text-white focus:border-amber-500/50 focus:ring-amber-500/20 transition-all rounded-xl"
+                                    className="bg-white/5 border-white/10 h-12 text-white focus:border-monk-500/50 focus:ring-monk-500/20 transition-all rounded-xl"
                                 />
                                 <datalist id="realms-list">
                                     {(REALMS[region as keyof typeof REALMS] || REALMS.eu).map((r) => (
@@ -100,7 +100,7 @@ export function BuildModule() {
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Personnage ou Lien WCL</label>
                             <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-amber-400 transition-colors">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-monk-400 transition-colors">
                                     <Search size={20} />
                                 </div>
                                 <Input
@@ -108,7 +108,7 @@ export function BuildModule() {
                                     onChange={(e) => setCharName(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && handleImportFromRio()}
                                     placeholder="Nom du perso (ex: Sylvanas) ou URL..."
-                                    className="bg-white/5 border-white/10 h-14 pl-12 text-lg font-medium text-white placeholder:text-slate-600 focus:border-amber-500/50 focus:ring-amber-500/20 transition-all rounded-xl"
+                                    className="bg-white/5 border-white/10 h-14 pl-12 text-lg font-medium text-white placeholder:text-slate-600 focus:border-monk-500/50 focus:ring-monk-500/20 transition-all rounded-xl"
                                 />
                             </div>
                         </div>
@@ -117,7 +117,7 @@ export function BuildModule() {
                         <div className="space-y-3">
                             <Button
                                 onClick={handleImportFromRio}
-                                className="w-full h-14 text-lg uppercase font-black tracking-widest bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] transition-all transform hover:-translate-y-0.5 rounded-xl border-none"
+                                className="w-full h-14 text-lg uppercase font-black tracking-widest bg-gradient-to-r from-monk-600 to-monk-500 hover:from-monk-500 hover:to-monk-400 text-black shadow-[0_0_20px_rgba(0,255,150,0.3)] hover:shadow-[0_0_30px_rgba(0,255,150,0.5)] transition-all transform hover:-translate-y-0.5 rounded-xl border-none"
                                 disabled={isLoading || !charName.trim()}
                             >
                                 {isLoading ? (
@@ -135,7 +135,7 @@ export function BuildModule() {
                             <Button
                                 variant="ghost"
                                 onClick={loadDemo}
-                                className="w-full text-xs uppercase tracking-widest text-slate-500 hover:text-amber-400 hover:bg-white/5"
+                                className="w-full text-xs uppercase tracking-widest text-slate-500 hover:text-monk-400 hover:bg-white/5"
                             >
                                 <PlayCircle size={14} className="mr-2" />
                                 Essayer avec une démo (Naowh - Tarren Mill)

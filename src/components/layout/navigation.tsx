@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Zap, Github, Twitter } from "lucide-react";
+import { Zap, Github, Twitter, Anchor, Heart, Wind } from "lucide-react";
 
 export function Navbar() {
     return (
@@ -15,35 +15,46 @@ export function Navbar() {
         >
             <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
                 <Link href="/" className="flex items-center gap-3 group">
-                    <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-epic-600 to-mana-600 shadow-glow transition-shadow group-hover:shadow-glow-lg">
+                    <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-monk-600 to-teal-600 shadow-glow transition-shadow group-hover:shadow-[0_0_30px_rgba(0,255,150,0.5)]">
                         <Zap className="h-5 w-5 text-white" />
-                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-epic-500 to-mana-500 opacity-0 transition-opacity group-hover:opacity-100" />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-monk-500 to-teal-500 opacity-0 transition-opacity group-hover:opacity-100" />
                         <Zap className="relative h-5 w-5 text-white" />
                     </div>
                     <span className="font-display text-xl font-bold tracking-tight">
-                        <span className="text-white">WoW</span>
-                        <span className="text-gradient-epic">Analyzer</span>
+                        <span className="text-white">Temple</span>
+                        <span className="text-gradient-monk">DuMoine</span>
                     </span>
                 </Link>
 
                 <div className="hidden items-center gap-8 md:flex">
                     <Link
-                        href="/#features"
-                        className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
+                        href="/brewmaster"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-monk-400 group"
                     >
-                        Fonctionnalités
+                        <Anchor className="h-4 w-4 group-hover:text-monk-500" />
+                        Maître Brasseur
                     </Link>
                     <Link
-                        href="/#how-it-works"
-                        className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
+                        href="/mistweaver"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-monk-400 group"
                     >
-                        Comment ça marche
+                        <Heart className="h-4 w-4 group-hover:text-monk-500" />
+                        Tisse-Brume
                     </Link>
+                    <Link
+                        href="/windwalker"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-monk-400 group"
+                    >
+                        <Wind className="h-4 w-4 group-hover:text-monk-500" />
+                        Marche-Vent
+                    </Link>
+                    <div className="h-4 w-[1px] bg-white/10" />
                     <Link
                         href="/analyze"
-                        className="btn-glow !px-6 !py-2.5 text-sm"
+                        className="btn-glow !px-6 !py-2.5 text-sm flex items-center gap-2"
                     >
-                        Analyser mes logs
+                        <Zap className="h-4 w-4" />
+                        Analyser
                     </Link>
                 </div>
             </div>
@@ -53,65 +64,70 @@ export function Navbar() {
 
 export function Footer() {
     return (
-        <footer className="border-t border-white/5 bg-void-900/50 backdrop-blur-xl">
+        <footer className="border-t border-white/5 bg-void-900/50 backdrop-blur-xl mt-20">
             <div className="mx-auto max-w-7xl px-6 py-12">
                 <div className="grid gap-8 md:grid-cols-4">
                     <div className="md:col-span-2">
                         <Link href="/" className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-epic-600 to-mana-600">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-monk-600 to-teal-600">
                                 <Zap className="h-4 w-4 text-white" />
                             </div>
                             <span className="font-display text-lg font-bold">
-                                <span className="text-white">WoW</span>
-                                <span className="text-gradient-epic">Analyzer</span>
+                                <span className="text-white">Temple</span>
+                                <span className="text-gradient-monk">DuMoine</span>
                             </span>
                         </Link>
                         <p className="mt-4 max-w-sm text-sm leading-relaxed text-gray-500">
-                            L&apos;intelligence artificielle au service de ta performance
-                            WoW. Analyse tes logs, comprends tes erreurs, domine les
-                            classements.
+                            Le guide ultime pour les Moines World of Warcraft francophones.
+                            Maîtrisez le Chi, l'Énergie et la Brume.
                         </p>
                     </div>
 
                     <div>
                         <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">
-                            Produit
+                            Spécialisations
                         </h4>
                         <ul className="space-y-3">
                             <li>
                                 <Link
-                                    href="/analyze"
-                                    className="text-sm text-gray-500 transition-colors hover:text-epic-400"
+                                    href="/brewmaster"
+                                    className="text-sm text-gray-500 transition-colors hover:text-monk-400"
                                 >
-                                    Analyser un log
+                                    Maître Brasseur (Tank)
                                 </Link>
                             </li>
                             <li>
-                                <span className="text-sm text-gray-600">
-                                    Documentation (bientôt)
-                                </span>
+                                <Link
+                                    href="/mistweaver"
+                                    className="text-sm text-gray-500 transition-colors hover:text-monk-400"
+                                >
+                                    Tisse-Brume (Heal)
+                                </Link>
                             </li>
                             <li>
-                                <span className="text-sm text-gray-600">
-                                    API (bientôt)
-                                </span>
+                                <Link
+                                    href="/windwalker"
+                                    className="text-sm text-gray-500 transition-colors hover:text-monk-400"
+                                >
+                                    Marche-Vent (DPS)
+                                </Link>
                             </li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">
-                            Légal
+                            Ressources
                         </h4>
                         <ul className="space-y-3">
                             <li>
-                                <span className="text-sm text-gray-500">
-                                    Confidentialité RGPD
-                                </span>
+                                <Link href="/analyze" className="text-sm text-gray-500 transition-colors hover:text-monk-400">
+                                    Analyse de Logs
+                                </Link>
                             </li>
                             <li>
-                                <span className="text-sm text-gray-500">
-                                    Pas de stockage de données
+                                <span className="text-sm text-gray-600">
+                                    Simulations (bientôt)
                                 </span>
                             </li>
                         </ul>
@@ -120,18 +136,18 @@ export function Footer() {
 
                 <div className="mt-12 flex items-center justify-between border-t border-white/5 pt-8">
                     <p className="text-xs text-gray-600">
-                        © {new Date().getFullYear()} WoWAnalyzer. Non affilié à Blizzard Entertainment.
+                        © {new Date().getFullYear()} TempleDuMoine. Non affilié à Blizzard Entertainment.
                     </p>
                     <div className="flex items-center gap-4">
                         <a
                             href="#"
-                            className="text-gray-600 transition-colors hover:text-epic-400"
+                            className="text-gray-600 transition-colors hover:text-monk-400"
                         >
                             <Github className="h-4 w-4" />
                         </a>
                         <a
                             href="#"
-                            className="text-gray-600 transition-colors hover:text-epic-400"
+                            className="text-gray-600 transition-colors hover:text-monk-400"
                         >
                             <Twitter className="h-4 w-4" />
                         </a>

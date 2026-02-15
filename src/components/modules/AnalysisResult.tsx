@@ -19,7 +19,7 @@ export interface AnalysisData {
 
 const StatusIcon = ({ status }: { status: string }) => {
     switch (status) {
-        case "success": return <CheckCircle className="text-green-500" size={24} />;
+        case "success": return <CheckCircle className="text-monk-500" size={24} />;
         case "warning": return <AlertTriangle className="text-amber-500" size={24} />;
         case "error": return <XCircle className="text-red-500" size={24} />;
         default: return <CheckCircle className="text-slate-500" size={24} />;
@@ -28,7 +28,7 @@ const StatusIcon = ({ status }: { status: string }) => {
 
 const StatusBadge = ({ status }: { status: string }) => {
     switch (status) {
-        case "success": return <Badge className="bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/50">Optimisé</Badge>;
+        case "success": return <Badge className="bg-monk-500/20 text-monk-400 hover:bg-monk-500/30 border-monk-500/50">Optimisé</Badge>;
         case "warning": return <Badge className="bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border-amber-500/50">Améliorable</Badge>;
         case "error": return <Badge className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border-red-500/50">Critique</Badge>;
         default: return null;
