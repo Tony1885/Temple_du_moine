@@ -94,7 +94,7 @@ export default function HomePage() {
               <div>
                 <h3 className="text-3xl font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">Tisse-Brume</h3>
                 <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                  Soignez vos alliés avec les brumes ancestrales et l'art du Serpent de Jade.
+                  Soignez vos alliés avec les brumes ancestrales et l&apos;art du Serpent de Jade.
                 </p>
                 <div className="flex items-center gap-2 text-teal-400 font-bold text-sm uppercase tracking-wide group-hover:gap-4 transition-all">
                   Voir le guide <ArrowRight size={16} />

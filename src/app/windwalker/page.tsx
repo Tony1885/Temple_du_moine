@@ -36,7 +36,7 @@ export default function WindwalkerPage() {
                 <div className="space-y-6 text-slate-300">
                     <h2 className="text-2xl font-bold text-white">Introduction</h2>
                     <p>
-                        Le Marche-Vent est reconnu pour sa mécanique unique de <strong>Frappes combatives</strong> : ne jamais utiliser deux fois la même compétence d'affilée pour maximiser les dégâts (Maîtrise).
+                        Le Marche-Vent est reconnu pour sa mécanique unique de <strong>Frappes combatives</strong> : ne jamais utiliser deux fois la même compétence d&apos;affilée pour maximiser les dégâts (Maîtrise).
                         Vous êtes un DPS mobile avec de forts dégâts de zone (AoE) via <strong>Coup tournoyant de la grue</strong>.
                     </p>
 

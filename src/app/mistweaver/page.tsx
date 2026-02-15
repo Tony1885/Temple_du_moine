@@ -37,7 +37,7 @@ export default function MistweaverPage() {
                     <h2 className="text-2xl font-bold text-white">Introduction</h2>
                     <p>
                         Le Tisse-Brume est un soigneur polyvalent capable de soigner à distance (Caster) ou au corps à corps (Fistweaving).
-                        Votre force réside dans vos <strong>Brumes de Rénovation</strong> qui sautent d'allié en allié et votre capacité à burst heal avec <strong>Vivifier</strong> et <strong>Cocon de vie</strong>.
+                        Votre force réside dans vos <strong>Brumes de Rénovation</strong> qui sautent d&apos;allié en allié et votre capacité à burst heal avec <strong>Vivifier</strong> et <strong>Cocon de vie</strong>.
                     </p>
 
                     <h3 className="text-xl font-bold text-white mt-8">Styles de Jeu</h3>
@@ -54,7 +54,7 @@ export default function MistweaverPage() {
                             <h4 className="font-bold text-teal-300 mb-2">Castweaving (Distance)</h4>
                             <p className="text-sm">
                                 Se concentre sur la gestion des HoTs (Brume apaisante, Brume enveloppante) et les canalisations.
-                                Plus traditionnel, permet de rester à distance et d'avoir une grosse réactivité sur les dégâts ciblés.
+                                Plus traditionnel, permet de rester à distance et d&apos;avoir une grosse réactivité sur les dégâts ciblés.
                             </p>
                         </div>
                     </div>
@@ -62,7 +62,7 @@ export default function MistweaverPage() {
                     <h3 className="text-xl font-bold text-white mt-8">Astuces Clés</h3>
                     <ul className="list-disc pl-5 space-y-2">
                         <li>Utilisez <strong>Thé de mana</strong> dès que possible pour récupérer du mana (si talent pris).</li>
-                        <li><strong>Cocon de vie</strong> est un CD défensif externe massif, n'hésitez pas à l'utiliser préventivement.</li>
+                        <li><strong>Cocon de vie</strong> est un CD défensif externe massif, n&apos;hésitez pas à l&apos;utiliser préventivement.</li>
                         <li>En Raid, synchronisez votre <strong>Regain</strong> (ou Sheilun) avec les gros dégâts de zone.</li>
                     </ul>
                 </div>

@@ -43,7 +43,7 @@ export default function BrewmasterPage() {
 
                     <h3 className="text-xl font-bold text-white mt-8">Rotation de Base</h3>
                     <ul className="list-disc pl-5 space-y-2">
-                        <li>Maintenez <strong>Fracas de tonneaux</strong> au cooldown (génère de l'aggro et réduit le CD des breuvages).</li>
+                        <li>Maintenez <strong>Fracas de tonneaux</strong> au cooldown (génère de l&apos;aggro et réduit le CD des breuvages).</li>
                         <li>Utilisez <strong>Souffle de feu</strong> pour appliquer le debuff sur les ennemis.</li>
                         <li>Consommez vos charges de <strong>Breuvage purificateur</strong> quand votre Report est Rouge ou Jaune élevé.</li>
                         <li>Ne laissez jamais votre énergie caper à 100%, dépensez-la avec <strong>Paume du tigre</strong> (si Talent) ou <strong>Frappe du voile noir</strong>.</li>
