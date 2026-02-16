@@ -90,7 +90,7 @@ export default function BrewmasterPage() {
 
                     <h3 className="text-xl font-bold text-white mt-8">Changements Clés du Prepatch</h3>
                     <ul className="list-disc pl-5 space-y-2">
-                        <li>Le <strong>Tier Set S1-2026</strong> favorise l'utilisation de <em>Coup tournoyant de la grue</em> même en monocible.</li>
+                        <li>Le <strong>Tier Set S1-2026</strong> favorise l&apos;utilisation de <em>Coup tournoyant de la grue</em> même en monocible.</li>
                         <li><em>Invocation de Niuzao</em> scal sur votre Versatilité dynamique.</li>
                         <li>Le build &quot;Charred Passions&quot; est de retour en force pour le M+.</li>
                     </ul>
