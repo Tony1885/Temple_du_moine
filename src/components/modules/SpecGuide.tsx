@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Shield, Zap, Heart, Sword, Info, RotateCw, Trophy, Users } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -126,7 +127,7 @@ export function SpecGuide({
                             >
                                 <div className={`p-4 rounded-2xl bg-white/5 ${specColor} ring-1 ring-white/10`}>
                                     {isImageUrl(specIcon) ? (
-                                        <img src={specIcon} alt={specName} className="w-8 h-8 rounded" />
+                                        <Image src={specIcon} alt={specName} width={32} height={32} className="rounded" unoptimized />
                                     ) : (
                                         specIcon
                                     )}

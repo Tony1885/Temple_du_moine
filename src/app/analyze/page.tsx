@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { ArrowLeft, ExternalLink, ShieldCheck, Trophy, Sword, Target, Loader2, RefreshCw, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Image from "next/image"
 import { fetchRaiderIOProfile, RaiderIOProfile } from "@/lib/raiderio-api"
 import { AnalysisResult, AnalysisData } from "@/components/modules/AnalysisResult"
 
@@ -171,8 +172,14 @@ function AnalyzeContent() {
                                 <div className="flex flex-col md:flex-row gap-8 items-start md:items-end">
                                     {/* Thumbnail */}
                                     <div className="relative shrink-0">
-                                        <div className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-slate-900 overflow-hidden shadow-2xl bg-slate-800">
-                                            <img src={profile.thumbnail_url} alt={profile.name} className="w-full h-full object-cover" />
+                                        <div className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-slate-900 overflow-hidden shadow-2xl bg-slate-800 relative">
+                                            <Image
+                                                src={profile.thumbnail_url}
+                                                alt={profile.name}
+                                                fill
+                                                className="object-cover"
+                                                unoptimized
+                                            />
                                         </div>
                                         <div className="absolute -bottom-2 -right-2 bg-slate-900 p-1.5 rounded-full border border-white/10">
                                             {profile.region.toUpperCase()}

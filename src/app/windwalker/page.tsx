@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Sword } from "lucide-react";
 import { SpecGuide } from "@/components/modules/SpecGuide";
 
 export default function WindwalkerPage() {
