@@ -10,6 +10,32 @@ import Image from "next/image"
 import { fetchRaiderIOProfile, RaiderIOProfile } from "@/lib/raiderio-api"
 import { AnalysisResult, AnalysisData } from "@/components/modules/AnalysisResult"
 
+function LoadingText() {
+    const messages = [
+        "Connexion au Temple du Moine...",
+        "Analyse des talents en cours...",
+        "Comparaison avec les données META (Icy Veins, WoWHead, Subcreation)...",
+        "Calcul des synergies du Chi...",
+        "Optimisation de la rotation...",
+        "Vérification des équipements...",
+        "Consultation des archives du Sommet de Kun-Lai..."
+    ];
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setIndex((prev) => (prev + 1) % messages.length);
+        }, 2500);
+        return () => clearInterval(timer);
+    }, []);
+
+    return (
+        <p className="text-monk-400 font-medium animate-pulse min-h-[24px]">
+            {messages[index]}
+        </p>
+    );
+}
+
 function AnalyzeContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
@@ -230,7 +256,7 @@ function AnalyzeContent() {
                         <Card className="bg-slate-900/30 border-monk-500/20 min-h-[300px] flex items-center justify-center">
                             <div className="text-center space-y-4">
                                 <div className="h-16 w-16 mx-auto rounded-full border-t-2 border-b-2 border-monk-500 animate-spin" />
-                                <p className="text-monk-400 font-medium animate-pulse">L&apos;IA analyse les données...</p>
+                                <LoadingText />
                             </div>
                         </Card>
                     ) : (
