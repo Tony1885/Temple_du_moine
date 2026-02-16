@@ -109,7 +109,7 @@ export default function BrewmasterPage() {
                         <div className="relative z-10 text-center space-y-4 p-6 bg-black/60 backdrop-blur-sm rounded-xl border border-white/10">
                             <h3 className="text-xl font-bold text-white">Calculateur de Talents 12.0</h3>
                             <p className="text-slate-300 max-w-md">
-                                Visualisez et modifiez l'arbre de talents optimisé pour le patch 12.0.
+                                Visualisez et modifiez l&apos;arbre de talents optimisé pour le patch 12.0.
                             </p>
                             <a
                                 href="https://www.wowhead.com/talent-calc/monk/brewmaster"
@@ -132,7 +132,7 @@ export default function BrewmasterPage() {
                     <h2 className="text-2xl font-bold text-white">État du Maître Brasseur (Prepatch 12.0)</h2>
                     <p>
                         Le <strong>Maître Brasseur</strong> reste un tank extrêmement solide, capable de lisser les dégâts les plus violents grâce à son mécanisme unique de <strong>Report (Stagger)</strong>.
-                        Avec le prepatch, l'accent est mis sur la <strong>Polyvalence</strong> et le <strong>Critique</strong> pour maximiser les soins reçus (Fortune Céleste) et la réduction de dégâts brute.
+                        Avec le prepatch, l&apos;accent est mis sur la <strong>Polyvalence</strong> et le <strong>Critique</strong> pour maximiser les soins reçus (Fortune Céleste) et la réduction de dégâts brute.
                     </p>
 
                     <div className="grid md:grid-cols-2 gap-6 my-8">
@@ -158,7 +158,7 @@ export default function BrewmasterPage() {
                     <h3 className="text-xl font-bold text-white mt-8">Note sur le Gameplay 12.0</h3>
                     <p>
                         La gestion des breuvages reste au cœur du gameplay. <strong>Breuvage purificateur</strong> doit être utilisé proactivement pour gérer le niveau de Report, tandis que
-                        <strong> Breuvage céleste</strong> est votre "Panic Button" préventif pour absorber les grosses attaques tank buster.
+                        <strong> Breuvage céleste</strong> est votre &quot;Panic Button&quot; préventif pour absorber les grosses attaques tank buster.
                     </p>
                 </div>
             }

@@ -105,7 +105,7 @@ export default function MistweaverPage() {
                         <div className="relative z-10 text-center space-y-4 p-6 bg-black/60 backdrop-blur-sm rounded-xl border border-white/10">
                             <h3 className="text-xl font-bold text-white">Calculateur de Talents 12.0</h3>
                             <p className="text-slate-300 max-w-md">
-                                Découvrez les nouveaux talents Héroïques : <strong>Conduit des Astres</strong> et <strong>Maître de l'Harmonie</strong>.
+                                Découvrez les nouveaux talents Héroïques : <strong>Conduit des Astres</strong> et <strong>Maître de l&apos;Harmonie</strong>.
                             </p>
                             <a
                                 href="https://www.wowhead.com/talent-calc/monk/mistweaver"
@@ -127,8 +127,8 @@ export default function MistweaverPage() {
                 <div className="space-y-6 text-slate-300">
                     <h2 className="text-2xl font-bold text-white">État du Tisse-Brume (Prepatch 12.0)</h2>
                     <p>
-                        Le <strong>Tisse-Brume</strong> est dans une position dominante grâce à son profil de soigneur "Melee" (Fistweaving) qui apporte des dégâts considérables tout en maintenant le groupe en vie.
-                        L'ajout des <strong>Hero Talents</strong> renforce deux styles de jeu distincts :
+                        Le <strong>Tisse-Brume</strong> est dans une position dominante grâce à son profil de soigneur &quot;Melee&quot; (Fistweaving) qui apporte des dégâts considérables tout en maintenant le groupe en vie.
+                        L&apos;ajout des <strong>Hero Talents</strong> renforce deux styles de jeu distincts :
                     </p>
 
                     <div className="grid md:grid-cols-2 gap-6 my-8">
@@ -139,9 +139,9 @@ export default function MistweaverPage() {
                             </p>
                         </div>
                         <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                            <h4 className="font-bold text-blue-400 mb-2">Maître de l'Harmonie (Master of Harmony)</h4>
+                            <h4 className="font-bold text-blue-400 mb-2">Maître de l&apos;Harmonie (Master of Harmony)</h4>
                             <p className="text-sm">
-                                Un style plus lissé, stockant de la "Vitalité" pour la libérer via le <em>Thé de concentration</em>. Offre une flexibilité incroyable en Soins ou Dégâts.
+                                Un style plus lissé, stockant de la &quot;Vitalité&quot; pour la libérer via le <em>Thé de concentration</em>. Offre une flexibilité incroyable en Soins ou Dégâts.
                             </p>
                         </div>
                     </div>
