@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Shield } from "lucide-react";
 import { SpecGuide } from "@/components/modules/SpecGuide";
 
 export default function BrewmasterPage() {
@@ -24,68 +23,77 @@ export default function BrewmasterPage() {
                 food: "Gâteau de la chance déviant (Crit/Vers)",
                 potion: "Potion de puissance élémentaire",
             }}
-            congruentBuilds={{
-                raid: "BwQA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
-                mythicPlus: "BwQA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
-            }}
+            builds={[
+                {
+                    name: "Build Survie Ultime",
+                    code: "BwQA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
+                    type: "Raid",
+                    playerRef: "Equinox"
+                },
+                {
+                    name: "Build Dégâts M+",
+                    code: "BwQA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
+                    type: "M+",
+                    playerRef: "Andybrew"
+                },
+                {
+                    name: "Build Hybride Prepatch",
+                    code: "BwQA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
+                    type: "Autre",
+                    playerRef: "Trill"
+                }
+
+            ]}
             rotation={{
+                notes: "Attention, depuis le prépatch 12.0, le Fracas génère plus d'aggro initial mais nécessite une gestion plus fine du Chi.",
                 opener: [
                     "Pré-pot : Potion de puissance élémentaire.",
-                    "Utilisez <strong>Fracas de tonneaux</strong> à l&apos;engagement pour générer de l&apos;aggro instantanée.",
-                    "Activez <strong>Invocation de Niuzao, le Buffle noir</strong>.",
-                    "Lancez <strong>Armes de l&apos;ordre</strong> pour booster votre Maîtrise.",
-                    "Utilisez <strong>Souffle de feu</strong> pour appliquer le DoT."
+                    "<strong>Invocation de Niuzao</strong> 2 sec avant le pull.",
+                    "<strong>Fracas de tonneaux</strong> (Keg Smash) au contact.",
+                    "<strong>Souffle de feu</strong> immédiat pour le buff de réduction dégâts.",
+                    "<strong>Armes de l&apos;Ordre</strong> (Kyrian) pour le burst aggro.",
+                    "Spam <strong>Coup tournoyant de la grue</strong> pour monter les stack de Breuvage."
                 ],
                 priority: [
-                    "Maintenez <strong>Fracas de tonneaux</strong> au cooldown (Génère 3 Chi / Réduit CD Breuvages).",
-                    "<strong>Frappe du voile noir</strong> si vous avez besoin de dégâts ou pour activer <em>Enseignements du monastère</em>.",
-                    "<strong>Souffle de feu</strong> si le debuff va expirer.",
-                    "<strong>Paume du tigre</strong> pour ne pas caper l&apos;énergie (au-dessus de 70%).",
-                    "<strong>Coup tournoyant de la grue</strong> en multi-cibles (3+ ennemis).",
-                    "<strong>Breuvage purificateur</strong> si le Report (Stagger) est rouge ou jaune élevé.",
-                    "<strong>Breuvage céleste</strong> pour absorber une grosse frappe (Tank Buster)."
+                    "<strong>Fracas de tonneaux</strong> dès que dispo. C'est la VIE.",
+                    "<strong>Breuvage purificateur</strong> si Barre rouge ou > 60% stagger.",
+                    "<strong>Frappe du voile noir</strong> pour le buff d'esquive.",
+                    "<strong>Souffle de feu</strong> pour refresh le DoT.",
+                    "<strong>Explosion de Chi</strong> (si talent) à 3+ Chi.",
+                    "<strong>Paume du tigre</strong> pour vider l'énergie et réduire le CD des breuvages."
                 ]
             }}
             topPlayers={{
-                period: "Saison 1 - Fév 2026",
+                period: "Prepatch 12.0 - Fév 2026",
                 players: [
-                    { name: "Equinox", score: "3850", region: "NA" },
-                    { name: "Trill", score: "3820", region: "NA" },
-                    { name: "Andybrew", score: "3795", region: "NA" },
-                    { name: "Kastel", score: "3750", region: "EU" },
-                    { name: "Onez", score: "3710", region: "KR" }
+                    { name: "Equinox", score: "4150", region: "NA", realm: "Tichondrius" },
+                    { name: "Andybrew", score: "4125", region: "NA", realm: "Illidan" },
+                    { name: "Trill", score: "4080", region: "NA", realm: "Illidan" },
+                    { name: "Kastel", score: "3990", region: "EU", realm: "Hyjal" },
+                    { name: "Onez", score: "3950", region: "KR", realm: "Azshara" }
                 ]
             }}
             externalLinks={{
                 wowhead: "https://www.wowhead.com/guide/classes/monk/brewmaster/overview-pve-tank",
-                icyveins: "https://www.icy-veins.com/wow/brewmaster-monk-pve-tank-guide",
+                lorrgs: "https://lorrgs.io/spec_ranking/monk/brewmaster"
             }}
             content={
                 <div className="space-y-6 text-slate-300">
-                    <h2 className="text-2xl font-bold text-white">État du Maître Brasseur (Février 2026)</h2>
+                    <h2 className="text-2xl font-bold text-white">État du Maître Brasseur (Février 2026 - Prepatch)</h2>
                     <p>
-                        En ce début d&apos;année 2026, le Maître Brasseur reste un <strong>monstre de mitigation active</strong>.
-                        Contrairement aux autres tanks qui comptent sur l&apos;armure ou le blocage, vous lissez les dégâts via le <strong>Report (Stagger)</strong>.
-                        Les changements récents (Patch 11.x) ont renforcé la synergie entre <em>Armes de l&apos;Ordre</em> et vos capacités défensives.
+                        Avec l'arrivée imminente de la nouvelle extension, le <strong>Maître Brasseur</strong> a reçu quelques ajustements majeurs sur son arbre de talents.
+                        Le <strong>Report (Stagger)</strong> est plus efficace contre les dégâts magiques grâce au nouveau talent capstone <em>&quot;Harmonie Céleste&quot;</em>.
+                    </p>
+                    <p>
+                        Les meilleurs joueurs comme <strong>Andybrew</strong> et <strong>Equinox</strong> privilégient désormais un gameplay beaucoup plus agressif, utilisant les procs de <em>Cadeau du Buffle</em> offensivement.
                     </p>
 
-                    <h3 className="text-xl font-bold text-white mt-8">Pourquoi jouer Brewmaster ?</h3>
+                    <h3 className="text-xl font-bold text-white mt-8">Changements Clés du Prepatch</h3>
                     <ul className="list-disc pl-5 space-y-2">
-                        <li><strong>Lissage de Dégâts inégalé :</strong> Impossible de se faire &quot;One-Shot&quot; grâce au Report.</li>
-                        <li><strong>Mobilité :</strong> Roulade, Transcendance et Torpille de Chi vous permettent de kited n&apos;importe quoi.</li>
-                        <li><strong>Dégâts :</strong> Toujours l&apos;un des tanks avec le plus gros DPS en AoE grâce au Combo Fracas + Souffle + Grue.</li>
+                        <li>Le <strong>Tier Set S1-2026</strong> favorise l'utilisation de <em>Coup tournoyant de la grue</em> même en monocible.</li>
+                        <li><em>Invocation de Niuzao</em> scal sur votre Versatilité dynamique.</li>
+                        <li>Le build &quot;Charred Passions&quot; est de retour en force pour le M+.</li>
                     </ul>
-
-                    <div className="p-4 rounded-xl bg-monk-500/10 border border-monk-500/20 mt-6">
-                        <h4 className="font-bold text-monk-400 mb-2 flex items-center gap-2">
-                            <Shield size={18} />
-                            Le Conseil du Temple
-                        </h4>
-                        <p className="text-sm">
-                            Ne paniquez pas si votre barre de vie descend. Regardez votre barre de Report. Si elle est rouge, purifiez. Sinon, faites confiance à vos soigneurs et à vos orbes de soins passifs.
-                            Le Maître Brasseur est un tank de rythme. Trouvez votre flow entre attaques et boissons.
-                        </p>
-                    </div>
                 </div>
             }
         />

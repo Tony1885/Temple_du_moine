@@ -2,11 +2,33 @@
 
 import React from "react"
 import { motion } from "framer-motion"
-import { Sparkles, Anchor, Heart, Wind, ArrowRight } from "lucide-react"
+import { Sparkles, ArrowRight, Zap, Info, ScrollText, Globe } from "lucide-react"
 import Link from "next/link"
-import { BuildModule } from "@/components/modules/BuildModule"
+import Image from "next/image"
+
+function NewsItem({ date, title, tag }: { date: string, title: string, tag: string }) {
+  return (
+    <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
+      <div className="flex flex-col items-center justify-center h-12 w-12 rounded bg-monk-500/20 text-monk-400 font-bold text-xs shrink-0">
+        <span className="leading-none">{date.split(' ')[0]}</span>
+        <span className="leading-none text-[10px] uppercase opacity-70">{date.split(' ')[1]}</span>
+      </div>
+      <div>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 block group-hover:text-monk-400 transition-colors">{tag}</span>
+        <h4 className="font-bold text-slate-200 group-hover:text-white transition-colors text-sm">{title}</h4>
+      </div>
+    </div>
+  )
+}
 
 export default function HomePage() {
+  const news = [
+    { date: "12 Fév", title: "Patch Notes 12.0 (Prepatch) : Analyse complète des changements Monk", tag: "Mise à jour" },
+    { date: "10 Fév", title: "Equinox (Brewmaster) : Nouveau record du monde en M+32", tag: "Esport" },
+    { date: "08 Fév", title: "Tier Set S1-2026 : Aperçu des bonus pour Tisse-Brume", tag: "Raiding" },
+    { date: "05 Fév", title: "Guide : Optimiser son Chi pour le Prepatch", tag: "Guide" },
+  ]
+
   return (
     <div className="relative min-h-screen pt-24 pb-12 px-4 md:px-8 overflow-hidden bg-[#020617] text-white selection:bg-monk-500/30">
 
@@ -33,7 +55,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-monk-500/30 bg-monk-500/10 text-monk-300 text-sm font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_-5px_rgba(0,255,150,0.5)] backdrop-blur-md"
           >
             <Sparkles size={14} className="animate-spin-slow" />
-            Le Guide Francophone
+            Le Guide Francophone • Prepatch 12.0
           </motion.div>
 
           <motion.h1
@@ -58,6 +80,27 @@ export default function HomePage() {
           </motion.p>
         </div>
 
+        {/* --- NEWS SECTION --- */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="bg-slate-900/40 border border-white/5 rounded-2xl p-6 backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold flex items-center gap-2 text-white">
+              <ScrollText size={18} className="text-monk-400" />
+              Dernières Actualités (Peak of Serenity & WoWHead)
+            </h3>
+            <span className="text-xs font-mono text-slate-500">Mise à jour : 12 Février 2026</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {news.map((item, i) => (
+              <NewsItem key={i} {...item} />
+            ))}
+          </div>
+        </motion.div>
+
         {/* --- SPECS CARDS --- */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -69,8 +112,15 @@ export default function HomePage() {
           <Link href="/brewmaster" className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 transition-all hover:border-monk-500/50 hover:bg-white/10 hover:shadow-[0_0_50px_rgba(0,255,150,0.15)]">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 pointer-events-none" />
             <div className="relative z-10 flex flex-col h-full justify-between space-y-20">
-              <div className="p-4 rounded-2xl bg-monk-500/20 w-fit text-monk-400 ring-1 ring-monk-500/50 group-hover:scale-110 transition-transform duration-500">
-                <Anchor size={32} />
+              <div className="p-2 rounded-2xl bg-monk-500/20 w-fit ring-1 ring-monk-500/50 group-hover:scale-110 transition-transform duration-500">
+                <Image
+                  src="https://wow.zamimg.com/images/wow/icons/large/spell_monk_brewmaster_spec.jpg"
+                  alt="Brewmaster"
+                  width={48}
+                  height={48}
+                  className="rounded-xl grayscale group-hover:grayscale-0 transition-all duration-500"
+                  unoptimized // Using external URL
+                />
               </div>
               <div>
                 <h3 className="text-3xl font-bold text-white mb-2 group-hover:text-monk-400 transition-colors">Maître Brasseur</h3>
@@ -88,8 +138,15 @@ export default function HomePage() {
           <Link href="/mistweaver" className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 transition-all hover:border-teal-500/50 hover:bg-white/10 hover:shadow-[0_0_50px_rgba(20,184,166,0.15)]">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 pointer-events-none" />
             <div className="relative z-10 flex flex-col h-full justify-between space-y-20">
-              <div className="p-4 rounded-2xl bg-teal-500/20 w-fit text-teal-400 ring-1 ring-teal-500/50 group-hover:scale-110 transition-transform duration-500">
-                <Heart size={32} />
+              <div className="p-2 rounded-2xl bg-teal-500/20 w-fit ring-1 ring-teal-500/50 group-hover:scale-110 transition-transform duration-500">
+                <Image
+                  src="https://wow.zamimg.com/images/wow/icons/large/spell_monk_mistweaver_spec.jpg"
+                  alt="Mistweaver"
+                  width={48}
+                  height={48}
+                  className="rounded-xl grayscale group-hover:grayscale-0 transition-all duration-500"
+                  unoptimized
+                />
               </div>
               <div>
                 <h3 className="text-3xl font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">Tisse-Brume</h3>
@@ -107,8 +164,15 @@ export default function HomePage() {
           <Link href="/windwalker" className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 transition-all hover:border-sky-500/50 hover:bg-white/10 hover:shadow-[0_0_50px_rgba(14,165,233,0.15)]">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 pointer-events-none" />
             <div className="relative z-10 flex flex-col h-full justify-between space-y-20">
-              <div className="p-4 rounded-2xl bg-sky-500/20 w-fit text-sky-400 ring-1 ring-sky-500/50 group-hover:scale-110 transition-transform duration-500">
-                <Wind size={32} />
+              <div className="p-2 rounded-2xl bg-sky-500/20 w-fit ring-1 ring-sky-500/50 group-hover:scale-110 transition-transform duration-500">
+                <Image
+                  src="https://wow.zamimg.com/images/wow/icons/large/spell_monk_windwalker_spec.jpg"
+                  alt="Windwalker"
+                  width={48}
+                  height={48}
+                  className="rounded-xl grayscale group-hover:grayscale-0 transition-all duration-500"
+                  unoptimized
+                />
               </div>
               <div>
                 <h3 className="text-3xl font-bold text-white mb-2 group-hover:text-sky-400 transition-colors">Marche-Vent</h3>
@@ -123,26 +187,9 @@ export default function HomePage() {
           </Link>
         </motion.div>
 
-        {/* --- ANALYZER SECTION --- */}
-        <div className="space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-white mb-2">Analyseur de Performance</h2>
-            <p className="text-slate-400">Optimisez votre cycle et votre équipement avec notre IA.</p>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, type: "spring" }}
-            className="w-full max-w-3xl mx-auto relative"
-          >
-            {/* Glowing Border Layout */}
-            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-monk-500 via-teal-500 to-monk-500 opacity-30 blur-xl animate-gradient-xy" />
-            <div className="relative">
-              <BuildModule />
-            </div>
-          </motion.div>
+        {/* --- REMOVED ANALYZER SECTION AS REQUESTED --- */}
+        <div className="text-center opacity-50 pb-12">
+          <p className="text-sm text-slate-500">Mise à jour des analyses IA en cours pour le Patch 12.0...</p>
         </div>
 
       </div>

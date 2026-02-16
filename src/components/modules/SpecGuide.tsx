@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Shield, Zap, Heart, Sword, Info, RotateCw, Trophy, Users } from "lucide-react";
+import { ArrowLeft, ExternalLink, Zap, Info, RotateCw, Trophy, Sword, Globe } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -36,27 +36,47 @@ interface PlayerRankProps {
     name: string;
     score: string;
     region: string;
+    realm?: string;
+    profileUrl?: string;
 }
 
-const TopPlayerRow = ({ rank, name, score, region }: PlayerRankProps) => (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+const TopPlayerRow = ({ rank, name, score, region, realm, profileUrl }: PlayerRankProps) => (
+    <a
+        href={profileUrl || `https://raider.io/characters/${region}/${realm || 'any'}/${name}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors group cursor-pointer"
+    >
         <div className="flex items-center gap-3">
             <span className={`flex items-center justify-center w-6 h-6 rounded font-bold text-sm ${rank === 1 ? 'bg-yellow-500/20 text-yellow-500' : rank === 2 ? 'bg-slate-400/20 text-slate-400' : rank === 3 ? 'bg-amber-700/20 text-amber-700' : 'bg-slate-800 text-slate-500'}`}>
                 {rank}
             </span>
-            <span className="font-bold text-slate-200">{name}</span>
+            <div className="flex flex-col">
+                <span className="font-bold text-slate-200 group-hover:text-white transition-colors flex items-center gap-1">
+                    {name}
+                    <ExternalLink size={10} className="opacity-0 group-hover:opacity-50" />
+                </span>
+                {realm && <span className="text-[10px] text-slate-500">{realm}</span>}
+            </div>
         </div>
         <div className="flex items-center gap-3 text-sm">
             <span className="text-monk-400 font-mono">{score}</span>
             <span className="text-xs uppercase text-slate-500 font-bold">{region}</span>
         </div>
-    </div>
+    </a>
 );
+
+export interface BuildOption {
+    name: string;
+    code: string;
+    type: "Raid" | "M+" | "PvP" | "Autre";
+    playerRef?: string;
+}
 
 interface SpecGuideProps {
     specName: string;
-    specIcon: React.ReactNode; // Can be component or image URL string
-    specColor: string; // e.g. "text-monk-500"
+    specIcon: React.ReactNode;
+    specColor: string;
     description: string;
     statsPriority: string[];
     consumables: {
@@ -65,22 +85,20 @@ interface SpecGuideProps {
         weapon: string;
         potion: string;
     };
-    congruentBuilds: {
-        raid: string;
-        mythicPlus: string;
-    };
+    builds: BuildOption[]; // Changed from congruentBuilds
     rotation: {
         opener: string[];
         priority: string[];
+        notes?: string;
     };
     topPlayers: {
-        period: string; // e.g. "Saison 1 - Février 2026"
-        players: Array<{ name: string; score: string; region: string }>;
+        period: string;
+        players: Array<PlayerRankProps>;
     };
     externalLinks: {
         wowhead: string;
-        icyveins: string;
         lorrgs?: string;
+        // icyveins removed
     };
     content: React.ReactNode;
 }
@@ -92,7 +110,7 @@ export function SpecGuide({
     description,
     statsPriority,
     consumables,
-    congruentBuilds,
+    builds,
     rotation,
     topPlayers,
     externalLinks,
@@ -153,16 +171,18 @@ export function SpecGuide({
                                     WoWHead
                                 </a>
                             </Button>
-                            <Button
-                                asChild
-                                variant="outline"
-                                className="border-white/10 hover:bg-white/5 hover:text-cyan-400 hover:border-cyan-500/50"
-                            >
-                                <a href={externalLinks.icyveins} target="_blank" rel="noopener noreferrer">
-                                    <ExternalLink size={16} className="mr-2" />
-                                    Icy Veins
-                                </a>
-                            </Button>
+                            {externalLinks.lorrgs && (
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    className="border-white/10 hover:bg-white/5 hover:text-purple-400 hover:border-purple-500/50"
+                                >
+                                    <a href={externalLinks.lorrgs} target="_blank" rel="noopener noreferrer">
+                                        <Globe size={16} className="mr-2" />
+                                        Lorrgs
+                                    </a>
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -174,8 +194,13 @@ export function SpecGuide({
                         {content}
 
                         {/* Rotation Section - NEW */}
-                        <GuideSection title="Rotation & Gameplay" icon={<RotateCw size={20} />}>
+                        <GuideSection title="Rotation & Gameplay (Prepatch 12.0)" icon={<RotateCw size={20} />}>
                             <div className="space-y-6">
+                                {rotation.notes && (
+                                    <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded text-sm text-yellow-200">
+                                        ⚠️ Note: {rotation.notes}
+                                    </div>
+                                )}
                                 <div>
                                     <h4 className="font-bold text-white mb-3 flex items-center gap-2">
                                         <span className="w-1.5 h-1.5 rounded-full bg-monk-500" />
@@ -205,26 +230,34 @@ export function SpecGuide({
                         </GuideSection>
 
                         {/* Builds */}
-                        <GuideSection title="Talents & Builds" icon={<Zap size={20} />}>
+                        <GuideSection title="Top Builds (Meta)" icon={<Zap size={20} />}>
                             <p>
-                                Pour performer, il est crucial d&apos;avoir les bons talents. Voici les codes d&apos;importation pour les builds standards, basés sur les données agrégées de plusieurs sources (WoWHead, Icy-Veins, Subcreation).
+                                Voici les builds utilisés par les meilleurs joueurs du monde sur ce patch. Sélectionnez celui qui correspond à votre activité.
                             </p>
                             <div className="grid gap-4 mt-4">
-                                <div className="p-4 rounded-xl bg-black/40 border border-white/5">
-                                    <h4 className="font-bold flex items-center justify-between">
-                                        Raid Mixte
-                                        <span className="text-xs px-2 py-1 rounded bg-monk-500/10 text-monk-400">Recommandé</span>
-                                    </h4>
-                                    <code className="block mt-2 text-xs text-slate-500 bg-black/50 p-2 rounded truncate cursor-pointer hover:text-white transition-colors" title="Cliquer pour copier">
-                                        {congruentBuilds.raid}
-                                    </code>
-                                </div>
-                                <div className="p-4 rounded-xl bg-black/40 border border-white/5">
-                                    <h4 className="font-bold flex items-center justify-between">Mythique+</h4>
-                                    <code className="block mt-2 text-xs text-slate-500 bg-black/50 p-2 rounded truncate cursor-pointer hover:text-white transition-colors" title="Cliquer pour copier">
-                                        {congruentBuilds.mythicPlus}
-                                    </code>
-                                </div>
+                                {builds.map((build, index) => (
+                                    <div key={index} className="p-4 rounded-xl bg-black/40 border border-white/5">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h4 className="font-bold text-white">{build.name}</h4>
+                                            {build.playerRef && (
+                                                <span className="text-xs text-slate-500 bg-white/5 px-2 py-1 rounded">
+                                                    Joué par {build.playerRef}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${build.type === 'Raid' ? 'bg-orange-500/20 text-orange-400' :
+                                                    build.type === 'M+' ? 'bg-green-500/20 text-green-400' :
+                                                        'bg-slate-500/20 text-slate-400'
+                                                }`}>
+                                                {build.type}
+                                            </span>
+                                        </div>
+                                        <code className="block mt-3 text-xs text-slate-500 bg-black/50 p-3 rounded truncate cursor-pointer hover:text-white transition-colors border border-white/5 hover:border-monk-500/30" title="Cliquer pour copier">
+                                            {build.code}
+                                        </code>
+                                    </div>
+                                ))}
                             </div>
                         </GuideSection>
                     </div>
