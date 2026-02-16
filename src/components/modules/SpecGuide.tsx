@@ -254,7 +254,7 @@ export function SpecGuide({
                                             </div>
 
                                             <Button className="w-full bg-white/5 hover:bg-monk-500/20 hover:text-monk-400 text-slate-300 border border-white/10" size="sm">
-                                                Copier le String d'Import
+                                                Copier le String d&apos;Import
                                             </Button>
                                         </div>
                                     </div>
