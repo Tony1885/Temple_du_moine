@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Shield, Zap, Heart, Sword, Info } from "lucide-react";
+import { ArrowLeft, ExternalLink, Shield, Zap, Heart, Sword, Info, RotateCw, Trophy, Users } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,9 +30,31 @@ const GuideSection = ({ title, icon, children }: GuideSectionProps) => (
     </Card>
 );
 
+interface PlayerRankProps {
+    rank: number;
+    name: string;
+    score: string;
+    region: string;
+}
+
+const TopPlayerRow = ({ rank, name, score, region }: PlayerRankProps) => (
+    <div className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+        <div className="flex items-center gap-3">
+            <span className={`flex items-center justify-center w-6 h-6 rounded font-bold text-sm ${rank === 1 ? 'bg-yellow-500/20 text-yellow-500' : rank === 2 ? 'bg-slate-400/20 text-slate-400' : rank === 3 ? 'bg-amber-700/20 text-amber-700' : 'bg-slate-800 text-slate-500'}`}>
+                {rank}
+            </span>
+            <span className="font-bold text-slate-200">{name}</span>
+        </div>
+        <div className="flex items-center gap-3 text-sm">
+            <span className="text-monk-400 font-mono">{score}</span>
+            <span className="text-xs uppercase text-slate-500 font-bold">{region}</span>
+        </div>
+    </div>
+);
+
 interface SpecGuideProps {
     specName: string;
-    specIcon: React.ReactNode;
+    specIcon: React.ReactNode; // Can be component or image URL string
     specColor: string; // e.g. "text-monk-500"
     description: string;
     statsPriority: string[];
@@ -45,6 +67,14 @@ interface SpecGuideProps {
     congruentBuilds: {
         raid: string;
         mythicPlus: string;
+    };
+    rotation: {
+        opener: string[];
+        priority: string[];
+    };
+    topPlayers: {
+        period: string; // e.g. "Saison 1 - Février 2026"
+        players: Array<{ name: string; score: string; region: string }>;
     };
     externalLinks: {
         wowhead: string;
@@ -62,9 +92,13 @@ export function SpecGuide({
     statsPriority,
     consumables,
     congruentBuilds,
+    rotation,
+    topPlayers,
     externalLinks,
     content,
 }: SpecGuideProps) {
+    const isImageUrl = (icon: React.ReactNode): icon is string => typeof icon === 'string';
+
     return (
         <div className="min-h-screen bg-[#020617] text-white pt-24 pb-12 px-4 md:px-8 selection:bg-monk-500/30">
             {/* Background elements */}
@@ -90,8 +124,12 @@ export function SpecGuide({
                                 animate={{ x: 0, opacity: 1 }}
                                 className="flex items-center gap-4"
                             >
-                                <div className={`p-4 rounded-2xl bg-white/5 ${specColor}`}>
-                                    {specIcon}
+                                <div className={`p-4 rounded-2xl bg-white/5 ${specColor} ring-1 ring-white/10`}>
+                                    {isImageUrl(specIcon) ? (
+                                        <img src={specIcon} alt={specName} className="w-8 h-8 rounded" />
+                                    ) : (
+                                        specIcon
+                                    )}
                                 </div>
                                 <h1 className="text-4xl md:text-6xl font-black tracking-tight uppercase">
                                     {specName}
@@ -134,10 +172,41 @@ export function SpecGuide({
                         {/* Custom Content */}
                         {content}
 
+                        {/* Rotation Section - NEW */}
+                        <GuideSection title="Rotation & Gameplay" icon={<RotateCw size={20} />}>
+                            <div className="space-y-6">
+                                <div>
+                                    <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-monk-500" />
+                                        Ouverture (Opener)
+                                    </h4>
+                                    <ol className="list-decimal pl-5 space-y-2 marker:text-monk-500">
+                                        {rotation.opener.map((step, i) => (
+                                            <li key={i} dangerouslySetInnerHTML={{ __html: step }} />
+                                        ))}
+                                    </ol>
+                                </div>
+
+                                <div className="h-px bg-white/5" />
+
+                                <div>
+                                    <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-monk-500" />
+                                        Priorité Standard
+                                    </h4>
+                                    <ol className="list-decimal pl-5 space-y-2 marker:text-monk-500">
+                                        {rotation.priority.map((step, i) => (
+                                            <li key={i} dangerouslySetInnerHTML={{ __html: step }} />
+                                        ))}
+                                    </ol>
+                                </div>
+                            </div>
+                        </GuideSection>
+
                         {/* Builds */}
                         <GuideSection title="Talents & Builds" icon={<Zap size={20} />}>
                             <p>
-                                Pour performer, il est crucial d&apos;avoir les bons talents. Voici les codes d&apos;importation pour les builds standards.
+                                Pour performer, il est crucial d&apos;avoir les bons talents. Voici les codes d&apos;importation pour les builds standards, basés sur les données agrégées de plusieurs sources (WoWHead, Icy-Veins, Subcreation).
                             </p>
                             <div className="grid gap-4 mt-4">
                                 <div className="p-4 rounded-xl bg-black/40 border border-white/5">
@@ -161,6 +230,24 @@ export function SpecGuide({
 
                     {/* Sidebar Column */}
                     <div className="space-y-8">
+                        {/* Top Players - NEW */}
+                        <Card className="glass-card">
+                            <CardHeader>
+                                <CardTitle className="text-lg flex items-center gap-2">
+                                    <Trophy size={18} className="text-yellow-500" />
+                                    Top Joueurs
+                                </CardTitle>
+                                <CardDescription className="text-xs font-mono text-monk-400">
+                                    {topPlayers.period}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                {topPlayers.players.map((player, i) => (
+                                    <TopPlayerRow key={i} rank={i + 1} {...player} />
+                                ))}
+                            </CardContent>
+                        </Card>
+
                         {/* Stats Priority */}
                         <Card className="glass-card">
                             <CardHeader>
