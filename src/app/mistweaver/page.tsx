@@ -12,10 +12,10 @@ export default function MistweaverPage() {
             description="Le soigneur mobile qui mélange arts martiaux et magie spirituelle pour protéger ses alliés."
             statsPriority={[
                 "Intellect",
-                "Hâte",
-                "Coup Critique",
+                "Hâte (Cap ~30%)",
+                "Coup Critique (Cap ~30%)",
                 "Polyvalence",
-                "Maîtrise",
+                "Maîtrise (Faible prio en MM+)",
             ]}
             consumables={{
                 weapon: "Dévotion sophique / Rune hurlante",
@@ -90,32 +90,66 @@ export default function MistweaverPage() {
             topPlayers={{
                 period: "Prepatch 12.0 - Fév 2026",
                 players: [
-                    { name: "Megaset", score: "4210", region: "NA", realm: "Illidan" },
-                    { name: "Swuiz", score: "4190", region: "EU", realm: "Twisting Nether" },
-                    { name: "Drainer", score: "4050", region: "EU", realm: "Twisting Nether" },
-                    { name: "Yummy", score: "4015", region: "NA", realm: "Sargeras" },
-                    { name: "Zmok", score: "3980", region: "EU", realm: "Silvermoon" }
+                    { name: "Megaset", score: "4350", region: "NA", realm: "Illidan" },
+                    { name: "Swuiz", score: "4310", region: "EU", realm: "Twisting Nether" },
+                    { name: "Veyloris", score: "4220", region: "NA", realm: "Sargeras" },
+                    { name: "Jdotb", score: "4150", region: "NA", realm: "Area 52" },
+                    { name: "Zmok", score: "4100", region: "EU", realm: "Silvermoon" }
                 ]
             }}
+            talentTree={
+                <div className="relative group rounded-xl overflow-hidden border border-white/10 bg-black">
+                    <div className="aspect-video w-full bg-[#111] flex items-center justify-center relative">
+                        {/* Placeholder for Talent Tree Image */}
+                        <div className="absolute inset-0 bg-[url('https://wow.zamimg.com/uploads/guide/images/25680.jpg')] bg-cover bg-center opacity-50" />
+                        <div className="relative z-10 text-center space-y-4 p-6 bg-black/60 backdrop-blur-sm rounded-xl border border-white/10">
+                            <h3 className="text-xl font-bold text-white">Calculateur de Talents 12.0</h3>
+                            <p className="text-slate-300 max-w-md">
+                                Découvrez les nouveaux talents Héroïques : <strong>Conduit des Astres</strong> et <strong>Maître de l'Harmonie</strong>.
+                            </p>
+                            <a
+                                href="https://www.wowhead.com/talent-calc/monk/mistweaver"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold transition-all transform hover:scale-105"
+                            >
+                                Ouvrir sur WoWHead
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
             externalLinks={{
                 wowhead: "https://www.wowhead.com/guide/classes/monk/mistweaver/overview-pve-healer",
                 lorrgs: "https://lorrgs.io/spec_ranking/monk/mistweaver"
             }}
             content={
                 <div className="space-y-6 text-slate-300">
-                    <h2 className="text-2xl font-bold text-white">État du Tisse-Brume (Février 2026 - Prepatch)</h2>
+                    <h2 className="text-2xl font-bold text-white">État du Tisse-Brume (Prepatch 12.0)</h2>
                     <p>
-                        Le <strong>Fistweaving</strong> domine complètement la méta, porté par des joueurs comme <strong>Megaset</strong> et <strong>Swuiz</strong>.
-                        Le <strong>Castweaving</strong> (style à distance) reste viable pour certains raids, mais perd en efficacité brute comparé aux dégâts que peut apporter un Mistweaver au corps à corps.
-                    </p>
-                    <p>
-                        Le changement majeur de ce prepatch est le rework de <strong>Chi-Ji</strong> qui devient un véritable CD de burst healing, rivalisant avec les meilleurs CDs des Prêtres.
+                        Le <strong>Tisse-Brume</strong> est dans une position dominante grâce à son profil de soigneur "Melee" (Fistweaving) qui apporte des dégâts considérables tout en maintenant le groupe en vie.
+                        L'ajout des <strong>Hero Talents</strong> renforce deux styles de jeu distincts :
                     </p>
 
-                    <h3 className="text-xl font-bold text-white mt-8">Conseils des Pro-Players</h3>
+                    <div className="grid md:grid-cols-2 gap-6 my-8">
+                        <div className="p-4 rounded-xl bg-teal-500/10 border border-teal-500/20">
+                            <h4 className="font-bold text-teal-400 mb-2">Conduit des Astres (Conduit of the Celestials)</h4>
+                            <p className="text-sm">
+                                Focalisé sur un burst AoE massif toutes les 90s. Idéal pour les Raids et les grosses clés Fortifiées où le groupe prend des dégâts constants.
+                            </p>
+                        </div>
+                        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                            <h4 className="font-bold text-blue-400 mb-2">Maître de l'Harmonie (Master of Harmony)</h4>
+                            <p className="text-sm">
+                                Un style plus lissé, stockant de la "Vitalité" pour la libérer via le <em>Thé de concentration</em>. Offre une flexibilité incroyable en Soins ou Dégâts.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-white mt-8">Conseils pour le Prepatch</h3>
                     <ul className="list-disc pl-5 space-y-2">
-                        <li><strong>Megaset</strong> insiste sur l&apos;importance de maintenir <em>Enseignements Ancestraux</em> actif à 100% du temps en combat.</li>
-                        <li><strong>Swuiz</strong> utilise le <em>Thé de concentration foudroyante</em> offensivement pour reset le CD de <em>Coup de pied du soleil levant</em>.</li>
+                        <li><strong>Anciens Enseignements</strong> est votre source principale de soin en donjon. Si vous n&apos;êtes pas au corps-à-corps, vous ne soignez pas !</li>
+                        <li>Le cap <strong>Hâte (30%)</strong> est crucial pour réduire le CD de vos coups de pieds et fluidifier la rotation.</li>
                     </ul>
                 </div>
             }

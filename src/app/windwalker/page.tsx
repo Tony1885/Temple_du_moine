@@ -12,10 +12,10 @@ export default function WindwalkerPage() {
             description="L'expert en arts martiaux qui déchaîne des coups rapides et dévastateurs. Maîtrisez la maîtrise des combinaisons."
             statsPriority={[
                 "Agilité",
+                "Hâte (Scaling Prepatch)",
                 "Polyvalence",
-                "Maîtrise",
                 "Coup Critique",
-                "Hâte",
+                "Maîtrise",
             ]}
             consumables={{
                 weapon: "Dévotion tremblante",
@@ -101,26 +101,59 @@ export default function WindwalkerPage() {
                     { name: "Raiku", score: "3995", region: "EU", realm: "Ravencrest" }
                 ]
             }}
+            talentTree={
+                <div className="relative group rounded-xl overflow-hidden border border-white/10 bg-black">
+                    <div className="aspect-video w-full bg-[#111] flex items-center justify-center relative">
+                        {/* Placeholder for Talent Tree Image */}
+                        <div className="absolute inset-0 bg-[url('https://wow.zamimg.com/uploads/guide/images/25681.jpg')] bg-cover bg-center opacity-50" />
+                        <div className="relative z-10 text-center space-y-4 p-6 bg-black/60 backdrop-blur-sm rounded-xl border border-white/10">
+                            <h3 className="text-xl font-bold text-white">Calculateur de Talents 12.0</h3>
+                            <p className="text-slate-300 max-w-md">
+                                Inclus les nouveaux arbres <strong>Shado-Pan</strong> et <strong>Conduit des Astres</strong>.
+                            </p>
+                            <a
+                                href="https://www.wowhead.com/talent-calc/monk/windwalker"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold transition-all transform hover:scale-105"
+                            >
+                                Ouvrir sur WoWHead
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
             externalLinks={{
                 wowhead: "https://www.wowhead.com/guide/classes/monk/windwalker/overview-pve-dps",
                 lorrgs: "https://lorrgs.io/spec_ranking/monk/windwalker"
             }}
             content={
                 <div className="space-y-6 text-slate-300">
-                    <h2 className="text-2xl font-bold text-white">État du Marche-Vent (Février 2026 - Prepatch)</h2>
+                    <h2 className="text-2xl font-bold text-white">État du Marche-Vent (Prepatch 12.0)</h2>
                     <p>
-                        Le <strong>Marche-Vent</strong> est une des classes les plus technique mais les plus gratifiantes du jeu.
-                        <strong>Babylonius</strong> et les theorycrafters du Peak of Serenity ont démontré que le nouveau scaling de la Maîtrise rend la spé extrêmement forte en Cleave constant.
+                        Le <strong>Marche-Vent</strong> subit de gros changements avec le Prepatch. La <strong>Hâte</strong> devient une stat beaucoup plus importante grâce au talent <em>Impulsion (Momentum Boost)</em> qui fait scaler les Poings de Fureur sur la hâte.
                     </p>
-                    <p>
-                        L&apos;AoE Burst sous <em>Tempête, Terre et Feu</em> reste inégalé, permettant de delete des packs entiers en M+25 et plus.
-                    </p>
+
+                    <div className="grid md:grid-cols-2 gap-6 my-8">
+                        <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                            <h4 className="font-bold text-purple-400 mb-2">Shado-Pan</h4>
+                            <p className="text-sm">
+                                Offre un profil de dégâts très constant, excellent en M+ pour enchainer les packs sans perdre de rythme.
+                            </p>
+                        </div>
+                        <div className="p-4 rounded-xl bg-sky-500/10 border border-sky-500/20">
+                            <h4 className="font-bold text-sky-400 mb-2">Conduit des Astres (Conduit of the Celestials)</h4>
+                            <p className="text-sm">
+                                Plus orienté Burst et Cleave sur peu de cibles. Très fort sur les boss de Raid.
+                            </p>
+                        </div>
+                    </div>
 
                     <h3 className="text-xl font-bold text-white mt-8">Optimisation Prepatch</h3>
                     <ul className="list-disc pl-5 space-y-2">
                         <li>Le <strong>Set Bonus S1-2026</strong> force à jouer avec <em>Frappe du voile noir</em> améliorée.</li>
                         <li>Ne jouez PAS avec <em>Invocation de Xuen</em> en pur monocible si vous n&apos;avez pas au moins 30% de Hâte (stat prioritaire #2 maintenant).</li>
-                        <li>La gestion du Chi est devenue plus punitive : overcaper = perte massive de DPS.</li>
+                        <li>La gestion du Chi reste punitive : overcaper = perte massive de DPS.</li>
                     </ul>
                 </div>
             }

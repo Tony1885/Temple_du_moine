@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Zap, Info, RotateCw, Trophy, Sword, Globe, MousePointer2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Zap, Info, RotateCw, Trophy, Sword, Globe } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -13,10 +13,11 @@ interface GuideSectionProps {
     title: string;
     icon: React.ReactNode;
     children: React.ReactNode;
+    id?: string;
 }
 
-const GuideSection = ({ title, icon, children }: GuideSectionProps) => (
-    <Card className="glass-card overflow-hidden">
+const GuideSection = ({ title, icon, children, id }: GuideSectionProps) => (
+    <Card className="glass-card overflow-hidden scroll-mt-32" id={id}>
         <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-monk-500 to-teal-500" />
         <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-xl font-bold text-white">
@@ -119,6 +120,7 @@ interface SpecGuideProps {
         lorrgs?: string;
     };
     content: React.ReactNode;
+    talentTree?: React.ReactNode;
 }
 
 export function SpecGuide({
@@ -134,9 +136,27 @@ export function SpecGuide({
     topPlayers,
     externalLinks,
     content,
+    talentTree,
 }: SpecGuideProps) {
     const isImageUrl = (icon: React.ReactNode): icon is string => typeof icon === 'string';
     const [activeTab, setActiveTab] = useState("st");
+
+    // Sub-navigation items
+    const navItems = [
+        { label: "Talents", id: "talents" },
+        { label: "Builds", id: "builds" },
+        { label: "Rotation", id: "rotation" },
+        { label: "BiS", id: "bis" },
+        { label: "Stats", id: "stats" },
+        { label: "Consommables", id: "consumables" },
+    ];
+
+    const scrollToSection = (id: string) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#020617] text-white pt-24 pb-12 px-4 md:px-8 selection:bg-monk-500/30">
@@ -207,14 +227,37 @@ export function SpecGuide({
                     </div>
                 </div>
 
+                {/* Sub-Navigation */}
+                <div className="sticky top-20 z-40 bg-[#020617]/80 backdrop-blur-md border border-white/5 rounded-xl p-2 mb-8 hidden md:block">
+                    <div className="flex items-center justify-center gap-2">
+                        {navItems.map((item) => (
+                            <Button
+                                key={item.id}
+                                variant="ghost"
+                                onClick={() => scrollToSection(item.id)}
+                                className="text-slate-400 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium"
+                            >
+                                {item.label}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content Column */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Custom Content */}
                         {content}
 
+                        {/* Talent Tree Section - NEW */}
+                        {talentTree && (
+                            <GuideSection title="Arbre de Talents" icon={<Zap size={20} />} id="talents">
+                                {talentTree}
+                            </GuideSection>
+                        )}
+
                         {/* Top Builds Section - Reimagined per User Request */}
-                        <GuideSection title="Arbre de Talents & Builds Meta" icon={<Zap size={20} />}>
+                        <GuideSection title="Builds Meta" icon={<Zap size={20} />} id="builds">
                             <p className="mb-4">
                                 Sélectionnez le build adapté à votre contenu. Ces arbres sont optimisés par les meilleurs joueurs mondiaux.
                             </p>
@@ -263,7 +306,7 @@ export function SpecGuide({
                         </GuideSection>
 
                         {/* Rotation Section - Updated with Tabs */}
-                        <GuideSection title="Rotation & Gameplay" icon={<RotateCw size={20} />}>
+                        <GuideSection title="Rotation & Gameplay" icon={<RotateCw size={20} />} id="rotation">
                             {rotation.notes && (
                                 <div className="p-3 mb-6 bg-yellow-500/10 border border-yellow-500/20 rounded text-sm text-yellow-200">
                                     ⚠️ Note Importante : {rotation.notes}
@@ -333,7 +376,7 @@ export function SpecGuide({
                         </GuideSection>
 
                         {/* BiS List - NEW */}
-                        <GuideSection title="Best in Slot (BiS)" icon={<Trophy size={20} />}>
+                        <GuideSection title="Best in Slot (BiS)" icon={<Trophy size={20} />} id="bis">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left">
                                     <thead className="text-xs text-slate-500 uppercase bg-white/5">
@@ -378,7 +421,7 @@ export function SpecGuide({
                         </Card>
 
                         {/* Stats Priority */}
-                        <Card className="glass-card">
+                        <Card className="glass-card scroll-mt-32" id="stats">
                             <CardHeader>
                                 <CardTitle className="text-lg flex items-center gap-2">
                                     <Info size={18} className="text-monk-400" />
@@ -400,7 +443,7 @@ export function SpecGuide({
                         </Card>
 
                         {/* Consumables */}
-                        <Card className="glass-card">
+                        <Card className="glass-card scroll-mt-32" id="consumables">
                             <CardHeader>
                                 <CardTitle className="text-lg flex items-center gap-2">
                                     <Sword size={18} className="text-orange-400" />

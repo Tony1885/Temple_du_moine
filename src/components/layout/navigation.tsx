@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Zap, Github, Twitter, Anchor, Heart, Wind } from "lucide-react";
+import { Zap, Github, Twitter, Anchor, Heart, Wind, ScrollText, Wrench } from "lucide-react";
 
 export function Navbar() {
     return (
@@ -26,7 +26,7 @@ export function Navbar() {
                     </span>
                 </Link>
 
-                <div className="hidden items-center gap-8 md:flex">
+                <div className="hidden items-center gap-6 md:flex">
                     <Link
                         href="/brewmaster"
                         className="flex items-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-monk-400 group"
@@ -48,13 +48,22 @@ export function Navbar() {
                         <Wind className="h-4 w-4 group-hover:text-monk-500" />
                         Marche-Vent
                     </Link>
+
                     <div className="h-4 w-[1px] bg-white/10" />
+
                     <Link
-                        href="/analyze"
-                        className="btn-glow !px-6 !py-2.5 text-sm flex items-center gap-2"
+                        href="/news"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-yellow-400 group"
                     >
-                        <Zap className="h-4 w-4" />
-                        Analyser
+                        <ScrollText className="h-4 w-4 group-hover:text-yellow-500" />
+                        Actualités
+                    </Link>
+                    <Link
+                        href="/utilities"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-blue-400 group"
+                    >
+                        <Wrench className="h-4 w-4 group-hover:text-blue-500" />
+                        Utilitaires
                     </Link>
                 </div>
             </div>

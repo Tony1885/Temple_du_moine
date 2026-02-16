@@ -12,10 +12,10 @@ export default function BrewmasterPage() {
             description="Le tank qui rit du danger. Esquivez, reportez les dégâts et purifiez-les avec vos breuvages célestes."
             statsPriority={[
                 "Agilité",
-                "Coup Critique",
                 "Polyvalence",
+                "Coup Critique",
                 "Maîtrise",
-                "Hâte",
+                "Hâte (à éviter)",
             ]}
             consumables={{
                 weapon: "Dévotion sophique / Rune hurlante",
@@ -94,34 +94,72 @@ export default function BrewmasterPage() {
             topPlayers={{
                 period: "Prepatch 12.0 - Fév 2026",
                 players: [
-                    { name: "Equinox", score: "4150", region: "NA", realm: "Tichondrius" },
-                    { name: "Andybrew", score: "4125", region: "NA", realm: "Illidan" },
-                    { name: "Trill", score: "4080", region: "NA", realm: "Illidan" },
-                    { name: "Kastel", score: "3990", region: "EU", realm: "Hyjal" },
-                    { name: "Onez", score: "3950", region: "KR", realm: "Azshara" }
+                    { name: "Equinox", score: "4280", region: "NA", realm: "Tichondrius" },
+                    { name: "Andybrew", score: "4215", region: "NA", realm: "Illidan" },
+                    { name: "Trill", score: "4150", region: "NA", realm: "Illidan" },
+                    { name: "Kastel", score: "4105", region: "EU", realm: "Hyjal" },
+                    { name: "Lorkean", score: "4050", region: "EU", realm: "Kazzak" }
                 ]
             }}
+            talentTree={
+                <div className="relative group rounded-xl overflow-hidden border border-white/10 bg-black">
+                    <div className="aspect-video w-full bg-[#111] flex items-center justify-center relative">
+                        {/* Placeholder for Talent Tree Image - In a real app, this would be a dynamic screenshot or interactive component */}
+                        <div className="absolute inset-0 bg-[url('https://wow.zamimg.com/uploads/guide/images/25679.jpg')] bg-cover bg-center opacity-50" />
+                        <div className="relative z-10 text-center space-y-4 p-6 bg-black/60 backdrop-blur-sm rounded-xl border border-white/10">
+                            <h3 className="text-xl font-bold text-white">Calculateur de Talents 12.0</h3>
+                            <p className="text-slate-300 max-w-md">
+                                Visualisez et modifiez l'arbre de talents optimisé pour le patch 12.0.
+                            </p>
+                            <a
+                                href="https://www.wowhead.com/talent-calc/monk/brewmaster"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-monk-600 hover:bg-monk-500 text-white font-bold transition-all transform hover:scale-105"
+                            >
+                                Ouvrir sur WoWHead
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
             externalLinks={{
                 wowhead: "https://www.wowhead.com/guide/classes/monk/brewmaster/overview-pve-tank",
                 lorrgs: "https://lorrgs.io/spec_ranking/monk/brewmaster"
             }}
             content={
                 <div className="space-y-6 text-slate-300">
-                    <h2 className="text-2xl font-bold text-white">État du Maître Brasseur (Février 2026 - Prepatch)</h2>
+                    <h2 className="text-2xl font-bold text-white">État du Maître Brasseur (Prepatch 12.0)</h2>
                     <p>
-                        Avec l&apos;arrivée imminente de la nouvelle extension, le <strong>Maître Brasseur</strong> a reçu quelques ajustements majeurs sur son arbre de talents.
-                        Le <strong>Report (Stagger)</strong> est plus efficace contre les dégâts magiques grâce au nouveau talent capstone <em>&quot;Harmonie Céleste&quot;</em>.
-                    </p>
-                    <p>
-                        Les meilleurs joueurs comme <strong>Andybrew</strong> et <strong>Equinox</strong> privilégient désormais un gameplay beaucoup plus agressif, utilisant les procs de <em>Cadeau du Buffle</em> offensivement.
+                        Le <strong>Maître Brasseur</strong> reste un tank extrêmement solide, capable de lisser les dégâts les plus violents grâce à son mécanisme unique de <strong>Report (Stagger)</strong>.
+                        Avec le prepatch, l'accent est mis sur la <strong>Polyvalence</strong> et le <strong>Critique</strong> pour maximiser les soins reçus (Fortune Céleste) et la réduction de dégâts brute.
                     </p>
 
-                    <h3 className="text-xl font-bold text-white mt-8">Changements Clés du Prepatch</h3>
-                    <ul className="list-disc pl-5 space-y-2">
-                        <li>Le <strong>Tier Set S1-2026</strong> favorise l&apos;utilisation de <em>Coup tournoyant de la grue</em> même en monocible.</li>
-                        <li><em>Invocation de Niuzao</em> scal sur votre Versatilité dynamique.</li>
-                        <li>Le build &quot;Charred Passions&quot; est de retour en force pour le M+.</li>
-                    </ul>
+                    <div className="grid md:grid-cols-2 gap-6 my-8">
+                        <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+                            <h4 className="font-bold text-green-400 mb-2">Points Forts</h4>
+                            <ul className="list-disc pl-4 space-y-1 text-sm">
+                                <li>Lissage des dégâts inégalé (Report)</li>
+                                <li>Mobilité exceptionnelle (Roulade, Transcendance)</li>
+                                <li>Gros burst dégâts en AoE</li>
+                                <li>Contribution significative au contrôle des foules (Anneau de Paix)</li>
+                            </ul>
+                        </div>
+                        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                            <h4 className="font-bold text-red-400 mb-2">Points Faibles</h4>
+                            <ul className="list-disc pl-4 space-y-1 text-sm">
+                                <li>Vulnérable aux dégâts magiques continus</li>
+                                <li>Nécessite beaucoup de bouton (Keybind heavy)</li>
+                                <li>Dépendance aux soigneurs pour remonter la barre rouge</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-white mt-8">Note sur le Gameplay 12.0</h3>
+                    <p>
+                        La gestion des breuvages reste au cœur du gameplay. <strong>Breuvage purificateur</strong> doit être utilisé proactivement pour gérer le niveau de Report, tandis que
+                        <strong> Breuvage céleste</strong> est votre "Panic Button" préventif pour absorber les grosses attaques tank buster.
+                    </p>
                 </div>
             }
         />
