@@ -23,43 +23,69 @@ export default function MistweaverPage() {
                 food: "Festin de Yusa (Grande Tablée)",
                 potion: "Potion de puissance élémentaire",
             }}
+            bis={[
+                { slot: "Tête", item: "Couronne de la Grue Jade", source: "Raid: Boss 8" },
+                { slot: "Cou", item: "Chaîne d'Harmonie Spirituelle", source: "Donjon: Temple of Jade Serpent" },
+                { slot: "Épaules", item: "Mantelet des Brumes Mobiles", source: "Raid: The Great Vault" },
+                { slot: "Torse", item: "Robe du Lotus Blanc", source: "Raid: Boss 2" },
+                { slot: "Mains", item: "Gants de Tissage de Vie", source: "M+: Ruby Life Pools" },
+                { slot: "Jambes", item: "Chausses du Dragon Céleste", source: "Raid: Boss 6" },
+                { slot: "Bijou 1", item: "Miroir de la Réflexion", source: "Raid: Boss 1" },
+                { slot: "Bijou 2", item: "Prisme d'Ambre", source: "Donjon: Vault of the Wardens" },
+            ]}
             builds={[
                 {
-                    name: "Fistweaving Raid",
+                    name: "Fistweaving Raid (Meta)",
                     code: "B4QA////////////////////////////////AAQAAQKgIiIjIiSIiIgmIgmE+QgkmoRJBAAAAIpJJJFAKAAAA",
                     type: "Raid",
                     playerRef: "Megaset"
                 },
                 {
-                    name: "Fistweaving M+",
-                    code: "B4QA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
+                    name: "Fistweaving M+ (Dégâts)",
+                    code: "B4QA////////////////////////////////AAQAAJEQiISEiIkiIiIJyIJhPkIJJqESQAAAAikkkkUAoAAAA",
                     type: "M+",
                     playerRef: "Swuiz"
                 },
                 {
-                    name: "Castweaving Legacy",
+                    name: "Castweaving Legacy (Distance)",
                     code: "B4QA////////////////////////////////AAQAAQKgIiIjIiSIiIgmIgmE+QgkmoRJBAAAAIpJJJFAKAAAA",
                     type: "Autre",
                     playerRef: "Yummy"
                 }
-
             ]}
             rotation={{
-                notes: "Le talent 'Anciens Enseignements' dure désormais 20 sec (Prepatch 12.0) au lieu de 15 sec.",
-                opener: [
-                    "Pré-cast : <strong>Brume de rénovation</strong> (x2) sur les tanks ou soigneurs.",
-                    "Activez <strong>Invocation de Chi-Ji, la Grue rouge</strong> juste avant le pull.",
-                    "Appliquez <strong>Palme du tigre</strong> (Teachings of the Monastery).",
-                    "Spammez <strong>Frappe du voile noir</strong> pour le <em>Fistweaving</em>."
-                ],
-                priority: [
-                    "Maintenez <strong>Brume enveloppante</strong> sur les tanks en cas de gros dégâts.",
-                    "Utilisez <strong>Vivifier</strong> en cas d&apos;urgence monocible.",
-                    "Fistweaving : <strong>Paume du tigre</strong> (x3) -> <strong>Frappe du voile noir</strong>.",
-                    "Coup de pied du soleil levant pour prolonger les brumes.",
-                    "Utilisez <strong>Cocon de vie</strong> préventivement sur des cibles fragiles.",
-                    "<strong>Regain</strong> ou <strong>Sheilun</strong> en cas de burst dégâts raid."
-                ]
+                notes: "Le talent 'Anciens Enseignements' (Ancient Teachings) dure désormais 20 sec (Prepatch 12.0). Maintenez-le actif à tout prix.",
+                st: {
+                    opener: [
+                        "Pré-cast : <strong>Brume de rénovation</strong> (x2) sur les tanks.",
+                        "Potion au pull.",
+                        "<strong>Paume du tigre</strong> (x2) pour charger les stacks.",
+                        "<strong>Coup de pied du soleil levant</strong> pour activer <em>Anciens Enseignements</em>.",
+                        "<strong>Invocation de Chi-Ji</strong> pour le burst initial."
+                    ],
+                    priority: [
+                        "Maintenez <strong>Brume de rénovation</strong> au CD.",
+                        "<strong>Coup de pied du soleil levant</strong> (RSK) dès que dispo.",
+                        "<strong>Frappe du voile noir</strong> pour reset RSK (avec talent).",
+                        "<strong>Vivifier</strong> (Instant) avec les procs.",
+                        "<strong>Brume enveloppante</strong> sur le tank si grosse claque."
+                    ]
+                },
+                aoe: {
+                    opener: [
+                        "Pré-cast : <strong>Brume de rénovation</strong> partout.",
+                        "<strong>Piétinement de ligne faë</strong> (Faeline Stomp) au sol.",
+                        "<strong>Coup tournoyant de la grue</strong> dans la ligne faë pour soigner tout le groupe.",
+                        "<strong>Invocation de Chi-Ji</strong> + <strong>Thé de manne</strong>."
+                    ],
+                    priority: [
+                        "Restez dans votre <strong>Ligne Faë</strong>.",
+                        "<strong>Coup tournoyant de la grue</strong> (Spinning Crane Kick) pour soigner via Chi-Ji/Enseignements.",
+                        "<strong>Réceptacle d'essence</strong> (Essence Font) si gros dégâts de raid (si talent pris).",
+                        "<strong>Regain</strong> (Sheilun) pour dispell de masse ou burst heal.",
+                        "<strong>Cocon de vie</strong> en préventif sur la cible la plus basse."
+                    ]
+                }
             }}
             topPlayers={{
                 period: "Prepatch 12.0 - Fév 2026",

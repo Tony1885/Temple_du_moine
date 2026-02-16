@@ -23,21 +23,31 @@ export default function BrewmasterPage() {
                 food: "Gâteau de la chance déviant (Crit/Vers)",
                 potion: "Potion de puissance élémentaire",
             }}
+            bis={[
+                { slot: "Tête", item: "Capuche de l'Esprit Céleste", source: "Raid: The Great Vault" },
+                { slot: "Cou", item: "Amulette de la Flamme Éternelle", source: "Donjon: Halls of Valor" },
+                { slot: "Épaules", item: "Espauliers du Tigre Blanc", source: "Raid: Boss 3" },
+                { slot: "Torse", item: "Harnois du Maître Brasseur", source: "Raid: Boss 7" },
+                { slot: "Mains", item: "Poignes de Fer", source: "M+: Mists of Tirna Scithe" },
+                { slot: "Jambes", item: "Jambiêres de la Grue Rouge", source: "Raid: Boss 5" },
+                { slot: "Bijou 1", item: "Pierre d'Alchimie Céleste", source: "Craft" },
+                { slot: "Bijou 2", item: "Totem de Vaudou", source: "Donjon: De Other Side" },
+            ]}
             builds={[
                 {
-                    name: "Build Survie Ultime",
+                    name: "Build Survie Ultime (Raid)",
                     code: "BwQA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
                     type: "Raid",
                     playerRef: "Equinox"
                 },
                 {
-                    name: "Build Dégâts M+",
+                    name: "Build Dégâts M+ (Charred Passions)",
                     code: "BwQA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
                     type: "M+",
                     playerRef: "Andybrew"
                 },
                 {
-                    name: "Build Hybride Prepatch",
+                    name: "Build Hybride (PvP/Solo)",
                     code: "BwQA////////////////////////////////AAQAAQKJiIhIyiEiISIJiIJhvkIJJiESSSSKSSBAAAAA",
                     type: "Autre",
                     playerRef: "Trill"
@@ -46,22 +56,40 @@ export default function BrewmasterPage() {
             ]}
             rotation={{
                 notes: "Attention, depuis le prépatch 12.0, le Fracas génère plus d'aggro initial mais nécessite une gestion plus fine du Chi.",
-                opener: [
-                    "Pré-pot : Potion de puissance élémentaire.",
-                    "<strong>Invocation de Niuzao</strong> 2 sec avant le pull.",
-                    "<strong>Fracas de tonneaux</strong> (Keg Smash) au contact.",
-                    "<strong>Souffle de feu</strong> immédiat pour le buff de réduction dégâts.",
-                    "<strong>Armes de l&apos;Ordre</strong> (Kyrian) pour le burst aggro.",
-                    "Spam <strong>Coup tournoyant de la grue</strong> pour monter les stack de Breuvage."
-                ],
-                priority: [
-                    "<strong>Fracas de tonneaux</strong> dès que dispo. C'est la VIE.",
-                    "<strong>Breuvage purificateur</strong> si Barre rouge ou > 60% stagger.",
-                    "<strong>Frappe du voile noir</strong> pour le buff d'esquive.",
-                    "<strong>Souffle de feu</strong> pour refresh le DoT.",
-                    "<strong>Explosion de Chi</strong> (si talent) à 3+ Chi.",
-                    "<strong>Paume du tigre</strong> pour vider l'énergie et réduire le CD des breuvages."
-                ]
+                st: {
+                    opener: [
+                        "Pré-pot : Potion de puissance élémentaire.",
+                        "<strong>Invocation de Niuzao</strong> 2 sec avant le pull.",
+                        "<strong>Fracas de tonneaux</strong> (Keg Smash) au contact.",
+                        "<strong>Souffle de feu</strong> immédiat pour le buff de réduction dégâts.",
+                        "<strong>Armes de l&apos;Ordre</strong> (Kyrian) pour le burst aggro.",
+                        "<strong>Paume du tigre</strong> pour dump l'excès d'énergie."
+                    ],
+                    priority: [
+                        "<strong>Fracas de tonneaux</strong> dès que dispo (Génère Chi & Aggro).",
+                        "<strong>Breuvage purificateur</strong> si Barre rouge ou > 60% stagger.",
+                        "<strong>Frappe du voile noir</strong> pour le buff d&apos;esquive.",
+                        "<strong>Souffle de feu</strong> pour refresh le DoT.",
+                        "<strong>Paume du tigre</strong> pour vider l&apos;énergie et réduire le CD des breuvages (via talent)."
+                    ]
+                },
+                aoe: {
+                    opener: [
+                        "Pré-pot : Potion de puissance élémentaire.",
+                        "<strong>Invocation de Niuzao</strong>.",
+                        "<strong>Fracas de tonneaux</strong> sur le groupe.",
+                        "<strong>Souffle de feu</strong> pour appliquer le DoT sur tout le monde.",
+                        "<strong>Vent impétueux de jade</strong> si talent.",
+                        "Spam <strong>Coup tournoyant de la grue</strong>."
+                    ],
+                    priority: [
+                        "<strong>Fracas de tonneaux</strong> (Reset CD via Hâte).",
+                        "<strong>Coup tournoyant de la grue</strong> dès que vous avez 3+ stacks de Mark.",
+                        "<strong>Souffle de feu</strong> en cooldown.",
+                        "<strong>Explosion de Chi</strong> (si talent) à 3+ Chi.",
+                        "<strong>Breuvage céleste</strong> pour absorber les grosses claques."
+                    ]
+                }
             }}
             topPlayers={{
                 period: "Prepatch 12.0 - Fév 2026",

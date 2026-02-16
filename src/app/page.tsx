@@ -2,31 +2,53 @@
 
 import React from "react"
 import { motion } from "framer-motion"
-import { Sparkles, ArrowRight, Zap, Info, ScrollText, Globe } from "lucide-react"
+import { Sparkles, ArrowRight, ScrollText } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
-function NewsItem({ date, title, tag }: { date: string, title: string, tag: string }) {
+function NewsItem({ date, title, tag, url }: { date: string, title: string, tag: string, url: string }) {
   return (
-    <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
-      <div className="flex flex-col items-center justify-center h-12 w-12 rounded bg-monk-500/20 text-monk-400 font-bold text-xs shrink-0">
-        <span className="leading-none">{date.split(' ')[0]}</span>
-        <span className="leading-none text-[10px] uppercase opacity-70">{date.split(' ')[1]}</span>
+    <a href={url} target="_blank" rel="noopener noreferrer" className="block h-full">
+      <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer group h-full">
+        <div className="flex flex-col items-center justify-center h-12 w-12 rounded bg-monk-500/20 text-monk-400 font-bold text-xs shrink-0">
+          <span className="leading-none">{date.split(' ')[0]}</span>
+          <span className="leading-none text-[10px] uppercase opacity-70">{date.split(' ')[1]}</span>
+        </div>
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 block group-hover:text-monk-400 transition-colors">{tag}</span>
+          <h4 className="font-bold text-slate-200 group-hover:text-white transition-colors text-sm leading-snug">{title}</h4>
+        </div>
       </div>
-      <div>
-        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 block group-hover:text-monk-400 transition-colors">{tag}</span>
-        <h4 className="font-bold text-slate-200 group-hover:text-white transition-colors text-sm">{title}</h4>
-      </div>
-    </div>
+    </a>
   )
 }
 
 export default function HomePage() {
   const news = [
-    { date: "12 Fév", title: "Patch Notes 12.0 (Prepatch) : Analyse complète des changements Monk", tag: "Mise à jour" },
-    { date: "10 Fév", title: "Equinox (Brewmaster) : Nouveau record du monde en M+32", tag: "Esport" },
-    { date: "08 Fév", title: "Tier Set S1-2026 : Aperçu des bonus pour Tisse-Brume", tag: "Raiding" },
-    { date: "05 Fév", title: "Guide : Optimiser son Chi pour le Prepatch", tag: "Guide" },
+    {
+      date: "12 Fév",
+      title: "Patch Notes 12.0 (Prepatch) : Analyse complète des changements Monk",
+      tag: "Mise à jour",
+      url: "https://www.peakofserenity.com/"
+    },
+    {
+      date: "10 Fév",
+      title: "Equinox (Brewmaster) : Nouveau record du monde en M+32",
+      tag: "Esport",
+      url: "https://raider.io/news"
+    },
+    {
+      date: "08 Fév",
+      title: "Tier Set S1-2026 : Aperçu des bonus pour Tisse-Brume",
+      tag: "Raiding",
+      url: "https://www.wowhead.com/news"
+    },
+    {
+      date: "05 Fév",
+      title: "Guide : Optimiser son Chi pour le Prepatch",
+      tag: "Guide",
+      url: "https://www.peakofserenity.com/windwalker/guide"
+    },
   ]
 
   return (
@@ -58,6 +80,9 @@ export default function HomePage() {
             Le Guide Francophone • Prepatch 12.0
           </motion.div>
 
+          {/* NEWS HIGHLIGHT WITHIN HERO OR RIGHT BELOW - Per User Request */}
+          {/* User asked for "news in a special category news at the top" */}
+
           <motion.h1
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -85,19 +110,22 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="bg-slate-900/40 border border-white/5 rounded-2xl p-6 backdrop-blur-sm"
+          className="relative"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold flex items-center gap-2 text-white">
-              <ScrollText size={18} className="text-monk-400" />
-              Dernières Actualités (Peak of Serenity & WoWHead)
-            </h3>
-            <span className="text-xs font-mono text-slate-500">Mise à jour : 12 Février 2026</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {news.map((item, i) => (
-              <NewsItem key={i} {...item} />
-            ))}
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-6 backdrop-blur-sm mt-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold flex items-center gap-2 text-white">
+                <ScrollText size={18} className="text-monk-400" />
+                Dernières Actualités
+              </h3>
+              <span className="text-xs font-mono text-slate-500">Mise à jour : 12 Février 2026</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {news.map((item, i) => (
+                <NewsItem key={i} {...item} />
+              ))}
+            </div>
           </div>
         </motion.div>
 
