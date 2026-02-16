@@ -27,7 +27,7 @@ function LoadingText() {
             setIndex((prev) => (prev + 1) % messages.length);
         }, 2500);
         return () => clearInterval(timer);
-    }, []);
+    }, [messages.length]);
 
     return (
         <p className="text-monk-400 font-medium animate-pulse min-h-[24px]">

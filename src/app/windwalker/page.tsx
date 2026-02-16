@@ -86,13 +86,13 @@ export default function WindwalkerPage() {
                         <strong>Babylonius</strong> et les theorycrafters du Peak of Serenity ont démontré que le nouveau scaling de la Maîtrise rend la spé extrêmement forte en Cleave constant.
                     </p>
                     <p>
-                        L'AoE Burst sous <em>Tempête, Terre et Feu</em> reste inégalé, permettant de delete des packs entiers en M+25 et plus.
+                        L&apos;AoE Burst sous <em>Tempête, Terre et Feu</em> reste inégalé, permettant de delete des packs entiers en M+25 et plus.
                     </p>
 
                     <h3 className="text-xl font-bold text-white mt-8">Optimisation Prepatch</h3>
                     <ul className="list-disc pl-5 space-y-2">
                         <li>Le <strong>Set Bonus S1-2026</strong> force à jouer avec <em>Frappe du voile noir</em> améliorée.</li>
-                        <li>Ne jouez PAS avec <em>Invocation de Xuen</em> en pur monocible si vous n'avez pas au moins 30% de Hâte (stat prioritaire #2 maintenant).</li>
+                        <li>Ne jouez PAS avec <em>Invocation de Xuen</em> en pur monocible si vous n&apos;avez pas au moins 30% de Hâte (stat prioritaire #2 maintenant).</li>
                         <li>La gestion du Chi est devenue plus punitive : overcaper = perte massive de DPS.</li>
                     </ul>
                 </div>

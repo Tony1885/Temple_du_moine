@@ -81,7 +81,7 @@ export default function BrewmasterPage() {
                 <div className="space-y-6 text-slate-300">
                     <h2 className="text-2xl font-bold text-white">État du Maître Brasseur (Février 2026 - Prepatch)</h2>
                     <p>
-                        Avec l'arrivée imminente de la nouvelle extension, le <strong>Maître Brasseur</strong> a reçu quelques ajustements majeurs sur son arbre de talents.
+                        Avec l&apos;arrivée imminente de la nouvelle extension, le <strong>Maître Brasseur</strong> a reçu quelques ajustements majeurs sur son arbre de talents.
                         Le <strong>Report (Stagger)</strong> est plus efficace contre les dégâts magiques grâce au nouveau talent capstone <em>&quot;Harmonie Céleste&quot;</em>.
                     </p>
                     <p>

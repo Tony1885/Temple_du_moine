@@ -88,7 +88,7 @@ export default function MistweaverPage() {
 
                     <h3 className="text-xl font-bold text-white mt-8">Conseils des Pro-Players</h3>
                     <ul className="list-disc pl-5 space-y-2">
-                        <li><strong>Megaset</strong> insiste sur l'importance de maintenir <em>Enseignements Ancestraux</em> actif à 100% du temps en combat.</li>
+                        <li><strong>Megaset</strong> insiste sur l&apos;importance de maintenir <em>Enseignements Ancestraux</em> actif à 100% du temps en combat.</li>
                         <li><strong>Swuiz</strong> utilise le <em>Thé de concentration foudroyante</em> offensivement pour reset le CD de <em>Coup de pied du soleil levant</em>.</li>
                     </ul>
                 </div>

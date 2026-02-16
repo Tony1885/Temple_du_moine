@@ -93,7 +93,7 @@ interface SpecGuideProps {
     };
     topPlayers: {
         period: string;
-        players: Array<PlayerRankProps>;
+        players: Array<Omit<PlayerRankProps, 'rank'>>;
     };
     externalLinks: {
         wowhead: string;
@@ -247,8 +247,8 @@ export function SpecGuide({
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${build.type === 'Raid' ? 'bg-orange-500/20 text-orange-400' :
-                                                    build.type === 'M+' ? 'bg-green-500/20 text-green-400' :
-                                                        'bg-slate-500/20 text-slate-400'
+                                                build.type === 'M+' ? 'bg-green-500/20 text-green-400' :
+                                                    'bg-slate-500/20 text-slate-400'
                                                 }`}>
                                                 {build.type}
                                             </span>
